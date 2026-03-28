@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Dorper gazdaság</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* TOPBAR */
+.topbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:#f5efe6;
+    z-index: 1000;
+}
+
+.top-logo { max-height: 90px; }
+
+/* MENU */
+.menu-btn {
+    position: fixed;
+    top: 40px;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 28px;
+    z-index: 2000;
+    cursor: pointer;
+}
+
+.sidebar {
+    position: fixed;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #222;
+    padding-top: 80px;
+    transition: 0.3s;
+    z-index: 1500;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 15px;
+    text-decoration: none;
+}
+
+/* HERO */
+.hero {
+    height: 420px;
+    margin-top: 80px;
+    background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+                url('hero.jpg') center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    position: relative;
+    animation: zoomHero 20s infinite alternate;
+}
+
+@keyframes zoomHero {
+    from { background-size: 100%; }
+    to { background-size: 110%; }
+}
+
+.hero h1 { font-size: 52px; }
+.hero p { max-width: 600px; }
+
+/* INSTAGRAM */
+.insta-box {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+}
+
+.insta-box a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: 0.3s;
+}
+
+.insta-box a:hover {
+    transform: scale(1.1);
+}
+
+/* ANIM */
+.fade {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: 0.8s;
+}
+
+.fade.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* STATS */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 60px 20px;
+    background: white;
+    text-align: center;
+}
+
+.stat h3 {
+    font-size: 40px;
+    color: #8b6f47;
+}
+
+/* CONTENT */
+.content {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+}
+
+.content p {
+    text-align: justify;
+}
+
+/* IMAGE BLOCK */
+.image-block {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 40px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+}
+
+.image-block img {
+    width: 50%;
+    border-radius: 15px;
+    object-fit: cover;
+}
+
+.image-block div {
+    width: 50%;
+}
+
+.image-block.reverse {
+    flex-direction: row-reverse;
+}
+
+/* WHATSAPP */
+.whatsapp-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background:#f5efe6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.whatsapp-bar a {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #075e54;
+    text-decoration: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <img src="logo.png" class="top-logo">
+</div>
+
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+<div id="menu" class="sidebar">
+    <a href="rolunk.html">Rólunk</a>
+    <a href="galeria.html">Galéria</a>
+    <a href="kapcsolat.html">Kapcsolat</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>KrisDorper Genetics</h1>
+    <p>A jó genetika nálunk nem marketing.</p>
+
+    <div class="insta-box">
+        <a href="https://instagram.com/kormanyoskristof" target="_blank">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+</div>
+
+<!-- STATS -->
+<section class="stats fade">
+    <div class="stat">
+        <h3>10+</h3>
+        <p>év tapasztalat</p>
+    </div>
+    <div class="stat">
+        <h3>100+</h3>
+        <p>állat</p>
+    </div>
+    <div class="stat">
+        <h3>100%</h3>
+        <p>fajtatiszta genetika</p>
+    </div>
+</section>
+
+<!-- CONTENT -->
+<section class="content fade">
+    <h2>A nyáj mögött</h2>
+
+    <p>
+    A juhtenyésztéssel több mint egy évtizede foglalkozom, a Dorper fajtával pedig egyetemi éveim alatt ismerkedtem meg Oláh János szakmai támogatásának köszönhetően. Már akkor egyértelművé vált számomra, hogy ez a fajta nemcsak különleges, hanem komoly jövőbeli lehetőségeket is rejt magában. Azóta tudatos tenyésztői munkával építem az állományomat, amely ma már mintegy 100 egyedből áll, és a Békés megyei Kaszaperen található.
+    </p>
+
+    <p>
+    A Dorper juhokban azt a potenciált láttam meg, amely a hazai viszonyok között egyre fontosabbá válik: kiváló alkalmazkodóképesség, ellenállóság és gazdaságos tartás. A fajta jól viseli a szélsőségesebb időjárási körülményeket, takarmányhasznosítása hatékony, húsformái pedig kiemelkedőek. Mindez különösen értékessé teszi a mai, változó klímájú környezetben.
+    </p>
+
+    <p>
+    Tenyészetemben a cél nem a mennyiség, hanem a megbízható, egységes és hosszú távon is értéket képviselő genetika kialakítása. Tenyészállataink értékesítése mellett szaktanácsadással és kezdő tenyésztők támogatásával is foglalkozom. Igény esetén vállaljuk az állatok kiszállítását is.
+    </p>
+
+</section>
+
+<!-- IMAGE BLOKK -->
+<section class="image-block fade">
+    <img src="farm.jpg">
+    <div>
+        <h2>Miért Dorper?</h2>
+        <p>Kiváló alkalmazkodóképesség és gazdaságosság.</p>
+    </div>
+</section>
+
+<!-- VÁLTOTT BLOKK -->
+<section class="image-block reverse fade">
+    <img src="farm2.jpg">
+    <div>
+        <h2>Megbízható genetika</h2>
+        <p>Egységes, ellenőrzött állomány hosszú távra.</p>
+    </div>
+</section>
+
+<div class="whatsapp-bar">
+    <a href="https://wa.me/36305726965">
+        WhatsApp kapcsolat
+    </a>
+</div>
+
+<script>
+
+function toggleMenu() {
+    let menu = document.getElementById("menu");
+    menu.style.left = (menu.style.left === "0px") ? "-250px" : "0px";
+}
+
+const elements = document.querySelectorAll('.fade');
+
+window.addEventListener('scroll', () => {
+    elements.forEach(el => {
+        const pos = el.getBoundingClientRect().top;
+        if(pos < window.innerHeight - 100){
+            el.classList.add('show');
+        }
+    });
+});
+
+</script>
+
+</body>
+</html>

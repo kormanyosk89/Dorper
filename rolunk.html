@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Rólunk - KrisDorper Genetics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: #f4f4f4;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 80px;
+    background: #f5efe6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.top-logo { 
+    height: auto;
+    max-height: 90px;
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+.top-lang { position: absolute; right: 20px; height: 30px; }
+
+/* ===== MENU ===== */
+.menu-btn {
+    position: fixed;
+    top: 40px;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 3000;
+}
+
+.sidebar {
+    position: fixed;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #222;
+    padding-top: 80px;
+    transition: 0.3s;
+    z-index: 2500;
+}
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 15px;
+    text-decoration: none;
+}
+.sidebar a:hover { background: #444; }
+
+/* ===== HERO ===== */
+.hero {
+    height: 420px;
+    margin-top: 80px;
+    background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                url('hero.jpg') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    animation: zoomHero 20s ease-in-out infinite alternate;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes zoomHero {
+    from { background-size: 100%; }
+    to { background-size: 110%; }
+}
+
+.hero h1 { font-size: 48px; }
+.hero p { opacity: 0.9; }
+
+/* ===== STATOK ===== */
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    background: #f5efe6;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+/* 🔥 EZ LETT MÓDOSÍTVA */
+.stat h3 {
+    font-size: 42px;
+    margin: 0;
+    color: #8b6f47;
+}
+
+/* ===== SZEKCIÓK ===== */
+.about-section {
+    display: flex;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 70px auto;
+    padding: 20px;
+    align-items: center;
+}
+
+.reverse { flex-direction: row-reverse; }
+
+.about-text h2 { font-size: 30px; }
+
+.about-text p {
+    line-height: 1.7;
+    text-align: justify;
+}
+
+.about-img img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 15px;
+}
+
+/* ===== ÉRTÉKEK ===== */
+.values {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.value i {
+    font-size: 32px;
+    color: #8b6f47;
+}
+
+/* ===== ANIM ===== */
+.fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: 1s;
+}
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== WHATSAPP ===== */
+.whatsapp-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: #f5efe6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.whatsapp-bar a {
+    color: #075e54;
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <img src="logo.png" class="top-logo">
+    <img src="lang.png" class="top-lang">
+</div>
+
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+<div id="menu" class="sidebar">
+    <a href="index.html">Főoldal</a>
+    <a href="rolunk.html">Rólunk</a>
+    <a href="galeria.html">Galéria</a>
+    <a href="kapcsolat.html">Kapcsolat</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <div>
+        <h1>KrisDorper Genetics</h1>
+        <p>„A genetika nem véletlen – hanem tudatos döntés.”</p>
+    </div>
+</div>
+
+<!-- STATOK -->
+<section class="stats fade-in">
+    <div class="stat">
+        <h3 class="counter" data-target="10">0</h3>
+        <p>év tapasztalat</p>
+    </div>
+
+    <div class="stat">
+        <h3 class="counter" data-target="300">0</h3>
+        <p>értékesített állat</p>
+    </div>
+
+    <div class="stat">
+        <h3 class="counter" data-target="5">0</h3>
+        <p>ország</p>
+    </div>
+</section>
+
+<!-- KIK VAGYUNK -->
+<section class="about-section fade-in">
+    <div class="about-text">
+        <h2>Kik vagyunk?</h2>
+        <p>
+        32 évesen, több mint 10 év tapasztalattal dolgozom Dorper juhokkal.
+        A célom egy stabil, megbízható és erős genetikai állomány felépítése.
+        </p>
+    </div>
+    <div class="about-img">
+        <img src="sheep1.jpg">
+    </div>
+</section>
+
+<!-- MIÉRT -->
+<section class="about-section reverse fade-in">
+    <div class="about-text">
+        <h2>Miért válasszon minket?</h2>
+        <p>
+        Nem csak állatokat adunk el, hanem tudást és támogatást is.
+        Vásárlóink hosszú távú partnereink.
+        </p>
+    </div>
+    <div class="about-img">
+        <img src="sheep2.jpg">
+    </div>
+</section>
+
+<!-- ÉRTÉKEK -->
+<section class="values fade-in">
+    <div class="value">
+        <i class="fas fa-dna"></i>
+        <h4>Genetika</h4>
+    </div>
+    <div class="value">
+        <i class="fas fa-award"></i>
+        <h4>Minőség</h4>
+    </div>
+    <div class="value">
+        <i class="fas fa-handshake"></i>
+        <h4>Támogatás</h4>
+    </div>
+</section>
+
+<!-- WHATSAPP -->
+<div class="whatsapp-bar">
+    <a href="https://wa.me/36305726965?text=Érdeklődöm%20a%20Dorper%20juhokról" target="_blank">
+        <i class="fab fa-whatsapp"></i> Legyen része a Dorper történetnek
+    </a>
+</div>
+
+<script>
+function toggleMenu() {
+    let menu = document.getElementById("menu");
+    menu.style.left = (menu.style.left === "0px") ? "-250px" : "0px";
+}
+
+/* SCROLL ANIM */
+const faders = document.querySelectorAll('.fade-in');
+window.addEventListener('scroll', () => {
+    faders.forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+            el.classList.add('show');
+        }
+    });
+});
+
+/* SZÁMLÁLÓ */
+const counters = document.querySelectorAll('.counter');
+
+function animateCounters() {
+    counters.forEach(counter => {
+        let target = +counter.getAttribute('data-target');
+        let count = 0;
+
+        function update() {
+            let diff = target - count;
+            let speed = Math.max(diff / 10, 1);
+
+            if (count < target) {
+                count += speed;
+                counter.innerText = Math.floor(count);
+                requestAnimationFrame(update);
+            } else {
+                counter.innerText = target + "+";
+            }
+        }
+
+        update();
+    });
+}
+
+window.addEventListener('scroll', () => {
+    const stats = document.querySelector('.stats');
+    if (stats.getBoundingClientRect().top < window.innerHeight) {
+        animateCounters();
+    }
+}, { once: true });
+</script>
+
+</body>
+</html>

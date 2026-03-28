@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Kapcsolat - KrisDorper Genetics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: #f4f4f4;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 80px;
+    background: #f5efe6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.top-logo { 
+    height: auto;
+    max-height: 90px;
+    transform: scale(1.05);
+}
+
+/* ===== MENU ===== */
+.menu-btn {
+    position: fixed;
+    top: 40px;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+.sidebar {
+    position: fixed;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: #222;
+    padding-top: 80px;
+    transition: 0.3s;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 15px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background: #444;
+}
+
+/* ===== HERO (AZONOS A RÓLUNK OLDALLAL) ===== */
+.hero {
+    height: 420px;
+    margin-top: 80px;
+    background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                url('profil.jpg') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    animation: zoomHero 20s ease-in-out infinite alternate;
+}
+
+@keyframes zoomHero {
+    from { background-size: 100%; }
+    to { background-size: 110%; }
+}
+
+.hero h1 { font-size: 48px; }
+.hero p { opacity: 0.9; }
+
+/* ===== CONTACT ===== */
+.contact-box, .form-box {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.contact-card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* ===== FORM ===== */
+.form-box input,
+.form-box textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.form-box button {
+    padding: 12px 20px;
+    background: #8b6f47;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ===== POPUP ===== */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    opacity: 0;
+    transition: 0.3s;
+    z-index: 2000;
+}
+
+.popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* ===== MAP ===== */
+.map iframe {
+    width: 100%;
+    height: 300px;
+    border-radius: 12px;
+    border: none;
+}
+
+/* ===== FLOAT WHATSAPP ===== */
+.whatsapp-float {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: #25D366;
+    color: white;
+    font-size: 26px;
+    padding: 15px;
+    border-radius: 50%;
+    z-index: 1500;
+}
+
+/* ===== WHATSAPP BAR ===== */
+.whatsapp-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: #f5efe6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.whatsapp-bar a {
+    color: #075e54;
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    gap: 10px;
+    font-weight: 600;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <img src="logo.png" class="top-logo">
+</div>
+
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+<div id="menu" class="sidebar">
+    <a href="index.html">Főoldal</a>
+    <a href="rolunk.html">Rólunk</a>
+    <a href="galeria.html">Galéria</a>
+    <a href="kapcsolat.html">Kapcsolat</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <div>
+        <h1>KrisDorper Genetics</h1>
+        <p>Lépjen kapcsolatba velünk</p>
+    </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-box">
+    <div class="contact-card">
+        <i class="fas fa-phone"></i>
+        <a href="tel:+36305726965">+36 30 572 6965</a>
+    </div>
+
+    <div class="contact-card">
+        <i class="fas fa-envelope"></i>
+        <a href="mailto:kormanyoskristof14@gmail.com">kormanyoskristof14@gmail.com</a>
+    </div>
+
+    <div class="contact-card">
+        <i class="fas fa-map-marker-alt"></i>
+        Kaszaper, Petőfi utca 39/B
+    </div>
+</div>
+
+<!-- FORM -->
+<div class="form-box">
+    <h3>Írj üzenetet</h3>
+
+    <form id="contactForm">
+        <input type="text" name="name" placeholder="Név" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <textarea name="message" rows="4" placeholder="Üzenet" required></textarea>
+        <button type="submit">Küldés</button>
+    </form>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+    <h3>Üzenet elküldve ✅</h3>
+    <p>Hamarosan felvesszük veled a kapcsolatot!</p>
+    <button onclick="closePopup()">OK</button>
+</div>
+
+<!-- MAP -->
+<div class="map">
+    <iframe src="https://www.google.com/maps?q=Kaszaper+Petőfi+utca+39+Békés+Hungary&z=15&output=embed"></iframe>
+</div>
+
+<!-- FLOAT WHATSAPP -->
+<a href="https://wa.me/36305726965" class="whatsapp-float">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- ALSÓ SÁV -->
+<div class="whatsapp-bar">
+    <a href="https://wa.me/36305726965?text=Érdeklődöm%20a%20Dorper%20juhokról">
+        <i class="fab fa-whatsapp"></i> Legyen része a Dorper történetnek
+    </a>
+</div>
+
+<script>
+function toggleMenu() {
+    let menu = document.getElementById("menu");
+    menu.style.left = (menu.style.left === "0px") ? "-250px" : "0px";
+}
+
+function closePopup() {
+    document.getElementById("popup").classList.remove("show");
+}
+</script>
+
+</body>
+</html>
