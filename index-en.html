@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dorper gazdaság</title>
+<title>Dorper Farm</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -30,7 +30,7 @@ body {
 
 .top-logo { max-height: 90px; }
 
-/* NYELV */
+/* LANGUAGE */
 .lang-switch {
     position: absolute;
     right: 20px;
@@ -84,7 +84,7 @@ body {
     text-decoration: none;
 }
 
-/* HERO */
+/* HERO (FIXED - darker like HU) */
 .hero {
     height: 420px;
     margin-top: 80px;
@@ -198,7 +198,7 @@ body {
     flex-direction: row-reverse;
 }
 
-/* WHATSAPP (FIXED - mint a másik oldalon) */
+/* WHATSAPP */
 .whatsapp-bar {
     position: fixed;
     bottom: 0;
@@ -229,25 +229,25 @@ body {
     <img src="logo.png" class="top-logo">
 
     <div class="lang-switch">
-        <img src="hu.png" class="active">
-        <a href="index-en.html">
-            <img src="en.png">
+        <a href="index.html">
+            <img src="hu.png">
         </a>
+        <img src="en.png" class="active">
     </div>
 </div>
 
 <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
 <div id="menu" class="sidebar">
-    <a href="rolunk.html">Rólunk</a>
-    <a href="galeria.html">Galéria</a>
-    <a href="kapcsolat.html">Kapcsolat</a>
+    <a href="rolunk-en.html">About</a>
+    <a href="galeria-en.html">Gallery</a>
+    <a href="kapcsolat-en.html">Contact</a>
 </div>
 
 <!-- HERO -->
 <div class="hero">
     <h1>KrisDorper Genetics</h1>
-    <p>A jó genetika nálunk nem marketing.</p>
+    <p>Quality genetics is not marketing for us.</p>
 
     <div class="insta-box">
         <a href="https://instagram.com/kormanyoskristof" target="_blank">
@@ -260,61 +260,61 @@ body {
 <section class="stats fade">
     <div class="stat">
         <h3>10+</h3>
-        <p>év tapasztalat</p>
+        <p>years of experience</p>
     </div>
     <div class="stat">
         <h3>100+</h3>
-        <p>állat</p>
+        <p>animals</p>
     </div>
     <div class="stat">
         <h3>100%</h3>
-        <p>fajtatiszta genetika</p>
+        <p>purebred genetics</p>
     </div>
 </section>
 
 <!-- CONTENT -->
 <section class="content fade">
-    <h2>A nyáj mögött</h2>
+    <h2>Behind the Flock</h2>
 
     <p>
-    Több mint egy évtizede foglalkozom juhászattal, a Dorper fajtával pedig egyetemi éveim alatt találkoztam először Dr. Oláh János szakmai iránymutatása mellett. Már akkor egyértelművé vált számomra, hogy ez a fajta nemcsak különleges, hanem komoly jövőbeli potenciállal is rendelkezik.
+    I have been involved in sheep breeding for more than a decade, and I first encountered the Dorper breed during my university years under the professional guidance of Dr. János Oláh. It quickly became clear to me that this breed is not only unique but also holds serious long-term potential.
     </p>
 
     <p>
-    Azóta tudatos és következetes tenyésztői munkával építem az állományt. A nyáj jelenleg mintegy 100 egyedből áll, és Békés vármegyében, Kaszaper térségében található.
+    Since then, I have been building the flock through conscious and consistent breeding work. Today, the herd consists of around 100 animals and is located in Békés County, Hungary, near Kaszaper.
     </p>
 
     <p>
-    A Dorperben azt ismertem fel, ami az európai körülmények között egyre fontosabbá válik: alkalmazkodóképesség, ellenálló képesség és gazdaságos tartás. A fajta jól teljesít szélsőségesebb időjárási viszonyok között is, kiváló takarmányhasznosítással rendelkezik, és kimagasló húsformákat produkál.
+    What I recognized in the Dorper breed is exactly what is becoming increasingly important under European conditions: adaptability, resilience, and cost-efficiency. The breed performs well even under more extreme weather conditions, utilizes feed efficiently, and produces excellent meat conformation.
     </p>
 
     <p>
-    A célom nem a mennyiség, hanem egy megbízható, egységes genetikai háttér kialakítása, amely hosszú távon is értéket képvisel. A tenyészállatok értékesítése mellett szakmai tanácsadással is segítem az újonnan induló gazdákat. Igény esetén a szállítás megoldható.
+    My goal is not quantity, but to establish a reliable, uniform genetic foundation that provides long-term value. In addition to selling breeding animals, I also support new farmers with professional advice. Delivery can be arranged upon request.
     </p>
 
 </section>
 
-<!-- IMAGE BLOKK -->
+<!-- IMAGE BLOCK -->
 <section class="image-block fade">
     <img src="farmv1.jpg">
     <div>
-        <h2>Miért Dorper?</h2>
-        <p>Kiváló alkalmazkodóképesség és gazdaságosság.</p>
+        <h2>Why Dorper?</h2>
+        <p>Outstanding adaptability and economic efficiency.</p>
     </div>
 </section>
 
 <section class="image-block reverse fade">
     <img src="farmv2.jpg">
     <div>
-        <h2>Megbízható genetika</h2>
-        <p>Egységes, ellenőrzött állomány hosszú távra.</p>
+        <h2>Reliable Genetics</h2>
+        <p>Consistent, controlled breeding stock for long-term success.</p>
     </div>
 </section>
 
 <!-- WHATSAPP -->
 <div class="whatsapp-bar">
-    <a href="https://wa.me/36305726965?text=Érdeklődöm%20a%20Dorper%20juhokról" target="_blank">
-        <i class="fab fa-whatsapp"></i> Legyen része a Dorper történetnek
+    <a href="https://wa.me/36305726965?text=I%20am%20interested%20in%20Dorper%20sheep" target="_blank">
+        <i class="fab fa-whatsapp"></i> Be part of the Dorper story
     </a>
 </div>
 
