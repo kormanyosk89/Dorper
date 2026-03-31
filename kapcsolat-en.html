@@ -11,42 +11,24 @@
 body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    background-color: #f4f4f4;
+    background: #f4f4f4;
 }
 
-/* TOPBAR */
 .topbar {
     position: fixed;
     top: 0;
     width: 100%;
     height: 80px;
+    background: #f5efe6;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color:#f5efe6;
     z-index: 1000;
 }
 
 .top-logo { max-height: 90px; }
+.top-lang { position: absolute; right: 20px; height: 30px; }
 
-.lang-switch {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.lang-switch img {
-    height: 30px;
-    opacity: 0.6;
-}
-
-.lang-switch .active {
-    opacity: 1;
-    border-bottom: 2px solid #8b6f47;
-}
-
-/* MENU */
 .menu-btn {
     position: fixed;
     top: 40px;
@@ -65,57 +47,41 @@ body {
     padding-top: 80px;
     transition: 0.3s;
 }
-
 .sidebar a {
     display: block;
     color: white;
     padding: 15px;
     text-decoration: none;
 }
+.sidebar a:hover { background: #444; }
 
-/* CONTENT */
-.contact-box {
-    max-width: 700px;
+.container {
+    max-width: 900px;
     margin: 120px auto;
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
+    padding: 20px;
     text-align: center;
 }
 
-.contact-box h1 {
-    margin-bottom: 10px;
+h1 { margin-bottom: 30px; }
+
+.contact-box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .contact-box p {
-    margin-bottom: 30px;
+    font-size: 18px;
+    margin: 10px 0;
 }
 
-.contact-box input,
-.contact-box textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
-
-.contact-box button {
-    padding: 12px 30px;
-    border: none;
-    background: #8b6f47;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-/* WHATSAPP */
 .whatsapp-bar {
     position: fixed;
     bottom: 0;
     width: 100%;
     height: 60px;
-    background:#f5efe6;
+    background: #f5efe6;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -125,9 +91,6 @@ body {
     color: #075e54;
     font-size: 20px;
     text-decoration: none;
-    display: flex;
-    gap: 10px;
-    font-weight: 600;
 }
 </style>
 </head>
@@ -136,38 +99,31 @@ body {
 
 <div class="topbar">
     <img src="logo.png" class="top-logo">
-
-    <div class="lang-switch">
-        <a href="kapcsolat.html"><img src="hu.png"></a>
-        <img src="en.png" class="active">
-    </div>
+    <img src="lang.png" class="top-lang">
 </div>
 
 <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
 <div id="menu" class="sidebar">
-    <a href="index-en.html">Home</a>
-    <a href="rolunk-en.html">About</a>
-    <a href="galeria-en.html">Gallery</a>
-    <a href="kapcsolat-en.html">Contact</a>
+    <a href="index_en.html">Home</a>
+    <a href="rolunk_en.html">About Us</a>
+    <a href="galeria_en.html">Gallery</a>
+    <a href="kapcsolat_en.html">Contact</a>
 </div>
 
-<div class="contact-box">
-    <h1>KrisDorper Genetics</h1>
-    <p>Become our partner</p>
+<div class="container">
+    <h1>Contact</h1>
 
-    <p><strong>Phone:</strong> +36 30 572 6965</p>
-    <p><strong>Address:</strong> Kaszaper, Petőfi Street 39/B, Hungary</p>
-
-    <input type="text" placeholder="Your name">
-    <input type="email" placeholder="Your email">
-    <textarea placeholder="Your message"></textarea>
-    <button>Send</button>
+    <div class="contact-box">
+        <p><strong>Name:</strong> KrisDorper Genetics</p>
+        <p><strong>Phone:</strong> +36 30 572 6965</p>
+        <p><strong>Email:</strong> info@krisdorper.com</p>
+    </div>
 </div>
 
 <div class="whatsapp-bar">
-    <a href="https://wa.me/36305726965?text=I%20am%20interested%20in%20Dorper%20sheep" target="_blank">
-        <i class="fab fa-whatsapp"></i> Be part of the Dorper story
+    <a href="https://wa.me/36305726965">
+        <i class="fab fa-whatsapp"></i> Message us on WhatsApp
     </a>
 </div>
 

@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>About - KrisDorper Genetics</title>
+<title>About Us - KrisDorper Genetics</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body {
@@ -13,40 +14,35 @@ body {
     background: #f4f4f4;
 }
 
+/* ===== TOPBAR ===== */
 .topbar {
     position: fixed;
     top: 0;
     width: 100%;
     height: 80px;
-    background:#f5efe6;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.lang-switch {
-    position: absolute;
-    right: 20px;
+    background: #f5efe6;
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
-
-.lang-switch img {
-    height: 30px;
-    opacity: 0.6;
+.top-logo { 
+    height: auto;
+    max-height: 90px;
+    transform: scale(1.05);
+    transition: 0.3s;
 }
+.top-lang { position: absolute; right: 20px; height: 30px; }
 
-.lang-switch .active {
-    opacity: 1;
-    border-bottom: 2px solid #8b6f47;
-}
-
+/* ===== MENU ===== */
 .menu-btn {
     position: fixed;
     top: 40px;
     left: 20px;
+    transform: translateY(-50%);
     font-size: 28px;
     cursor: pointer;
+    z-index: 3000;
 }
 
 .sidebar {
@@ -57,44 +53,126 @@ body {
     background: #222;
     padding-top: 80px;
     transition: 0.3s;
+    z-index: 2500;
 }
-
 .sidebar a {
-    color: white;
     display: block;
+    color: white;
     padding: 15px;
     text-decoration: none;
 }
+.sidebar a:hover { background: #444; }
 
-.content {
-    max-width: 900px;
-    margin: 120px auto;
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
+/* ===== HERO ===== */
+.hero {
+    height: 420px;
+    margin-top: 80px;
+    background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                url('herov1.jpg') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    animation: zoomHero 20s ease-in-out infinite alternate;
+    position: relative;
+    z-index: 1;
 }
 
+@keyframes zoomHero {
+    from { background-size: 100%; }
+    to { background-size: 110%; }
+}
+
+.hero h1 { font-size: 48px; }
+.hero p { opacity: 0.9; }
+
+/* ===== STATOK ===== */
 .stats {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 40px;
-}
-
-.stat h3 {
-    color: #8b6f47;
-    font-size: 36px;
+    justify-content: center;
+    gap: 60px;
+    background: #f5efe6;
+    padding: 50px 20px;
     text-align: center;
 }
 
+.stat h3 {
+    font-size: 42px;
+    margin: 0;
+    color: #8b6f47;
+}
+
+/* ===== SZEKCIÓK ===== */
+.about-section {
+    display: flex;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 70px auto;
+    padding: 20px;
+    align-items: center;
+}
+
+.reverse { flex-direction: row-reverse; }
+
+.about-text h2 { font-size: 30px; }
+
+.about-text p {
+    line-height: 1.7;
+    text-align: justify;
+}
+
+.about-img img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 15px;
+}
+
+/* ===== ÉRTÉKEK ===== */
+.values {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.value i {
+    font-size: 32px;
+    color: #8b6f47;
+}
+
+/* ===== ANIM ===== */
+.fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: 1s;
+}
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== WHATSAPP ===== */
 .whatsapp-bar {
     position: fixed;
     bottom: 0;
     width: 100%;
     height: 60px;
-    background:#f5efe6;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    background: #f5efe6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.whatsapp-bar a {
+    color: #075e54;
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
 }
 </style>
 </head>
@@ -102,75 +180,134 @@ body {
 <body>
 
 <div class="topbar">
-    <img src="logo.png" style="max-height:90px;">
-
-    <div class="lang-switch">
-        <a href="rolunk.html"><img src="hu.png"></a>
-        <img src="en.png" class="active">
-    </div>
+    <img src="logo.png" class="top-logo">
+    <img src="lang.png" class="top-lang">
 </div>
 
 <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
 <div id="menu" class="sidebar">
-    <a href="index-en.html">Home</a>
-    <a href="rolunk-en.html">About</a>
-    <a href="galeria-en.html">Gallery</a>
-    <a href="kapcsolat-en.html">Contact</a>
+    <a href="index_en.html">Home</a>
+    <a href="rolunk_en.html">About Us</a>
+    <a href="galeria_en.html">Gallery</a>
+    <a href="kapcsolat_en.html">Contact</a>
 </div>
 
-<div class="content">
-
-<div class="stats">
-    <div class="stat">
-        <h3>10+</h3>
-        <p>years experience</p>
-    </div>
-    <div class="stat">
-        <h3>100+</h3>
-        <p>animals</p>
-    </div>
-    <div class="stat">
-        <h3>100%</h3>
-        <p>pure genetics</p>
+<div class="hero">
+    <div>
+        <h1>KrisDorper Genetics</h1>
     </div>
 </div>
 
-<h2>Who we are</h2>
+<section class="stats fade-in">
+    <div class="stat">
+        <h3 class="counter" data-target="10">0</h3>
+        <p>years of experience</p>
+    </div>
 
-<p>
-For more than a decade, I have been involved in sheep farming. I first encountered the Dorper breed during my university years under the professional guidance of Dr. János Oláh.
-</p>
+    <div class="stat">
+        <h3 class="counter" data-target="300">0</h3>
+        <p>animals sold</p>
+    </div>
 
-<p>
-Since then, I have been building the flock through conscious and consistent breeding work. The herd currently consists of around 100 animals and is located in Békés county, near Kaszaper.
-</p>
+    <div class="stat">
+        <h3 class="counter" data-target="5">0</h3>
+        <p>countries</p>
+    </div>
+</section>
 
-<p>
-What I recognized in the Dorper is what is becoming increasingly important in European conditions: adaptability, resilience, and cost-effective keeping.
-</p>
+<section class="about-section fade-in">
+    <div class="about-text">
+        <h2>Who are we?</h2>
+        <p>
+        At the age of 32, with more than 10 years of experience, I have been working with Dorper sheep.
+        My goal is to build a stable, reliable and strong genetic stock.
+        </p>
+    </div>
+    <div class="about-img">
+        <img src="sheep1.jpg">
+    </div>
+</section>
 
-<h2>Why choose us</h2>
+<section class="about-section reverse fade-in">
+    <div class="about-text">
+        <h2>Why choose us?</h2>
+        <p>
+        We don’t just sell animals, we also provide knowledge and support.
+        Our buyers become long-term partners.
+        </p>
+    </div>
+    <div class="about-img">
+        <img src="sheep2.jpg">
+    </div>
+</section>
 
-<ul>
-<li>Reliable genetics</li>
-<li>High quality breeding stock</li>
-<li>Professional support</li>
-</ul>
-
-</div>
+<section class="values fade-in">
+    <div class="value">
+        <i class="fas fa-dna"></i>
+        <h4>Genetics</h4>
+    </div>
+    <div class="value">
+        <i class="fas fa-award"></i>
+        <h4>Quality</h4>
+    </div>
+    <div class="value">
+        <i class="fas fa-handshake"></i>
+        <h4>Support</h4>
+    </div>
+</section>
 
 <div class="whatsapp-bar">
-    <a href="https://wa.me/36305726965">
-        Be part of the Dorper story
+    <a href="https://wa.me/36305726965?text=I%20am%20interested%20in%20Dorper%20sheep" target="_blank">
+        <i class="fab fa-whatsapp"></i> Be part of the Dorper story
     </a>
 </div>
 
 <script>
-function toggleMenu(){
-let menu=document.getElementById("menu");
-menu.style.left=(menu.style.left==="0px")?"-250px":"0px";
+function toggleMenu() {
+    let menu = document.getElementById("menu");
+    menu.style.left = (menu.style.left === "0px") ? "-250px" : "0px";
 }
+
+const faders = document.querySelectorAll('.fade-in');
+window.addEventListener('scroll', () => {
+    faders.forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+            el.classList.add('show');
+        }
+    });
+});
+
+const counters = document.querySelectorAll('.counter');
+
+function animateCounters() {
+    counters.forEach(counter => {
+        let target = +counter.getAttribute('data-target');
+        let count = 0;
+
+        function update() {
+            let diff = target - count;
+            let speed = Math.max(diff / 10, 1);
+
+            if (count < target) {
+                count += speed;
+                counter.innerText = Math.floor(count);
+                requestAnimationFrame(update);
+            } else {
+                counter.innerText = target + "+";
+            }
+        }
+
+        update();
+    });
+}
+
+window.addEventListener('scroll', () => {
+    const stats = document.querySelector('.stats');
+    if (stats.getBoundingClientRect().top < window.innerHeight) {
+        animateCounters();
+    }
+}, { once: true });
 </script>
 
 </body>
