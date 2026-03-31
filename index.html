@@ -198,7 +198,7 @@ body {
     flex-direction: row-reverse;
 }
 
-/* WHATSAPP (FIXED - mint a másik oldalon) */
+/* WHATSAPP */
 .whatsapp-bar {
     position: fixed;
     bottom: 0;
@@ -218,6 +218,49 @@ body {
     align-items: center;
     gap: 10px;
     font-weight: 600;
+}
+
+/* EASTER EGG */
+.easter-egg {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+.egg {
+    font-size: 42px;
+    position: absolute;
+}
+
+.egg.crack {
+    animation: crack 0.5s ease forwards;
+}
+
+@keyframes crack {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+.lamb {
+    font-size: 44px;
+    position: absolute;
+    opacity: 0;
+    transform: scale(0);
+}
+
+.lamb.show {
+    animation: pop 0.6s ease forwards;
+}
+
+@keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 </style>
@@ -244,7 +287,6 @@ body {
     <a href="kapcsolat.html">Kapcsolat</a>
 </div>
 
-<!-- HERO -->
 <div class="hero">
     <h1>KrisDorper Genetics</h1>
     <p>A jó genetika nálunk nem marketing.</p>
@@ -256,7 +298,6 @@ body {
     </div>
 </div>
 
-<!-- STATS -->
 <section class="stats fade">
     <div class="stat">
         <h3>10+</h3>
@@ -272,29 +313,13 @@ body {
     </div>
 </section>
 
-<!-- CONTENT -->
 <section class="content fade">
     <h2>A nyáj mögött</h2>
-
     <p>
-    Több mint egy évtizede foglalkozom juhászattal, a Dorper fajtával pedig egyetemi éveim alatt találkoztam először Dr. Oláh János szakmai iránymutatása mellett. Már akkor egyértelművé vált számomra, hogy ez a fajta nemcsak különleges, hanem komoly jövőbeli potenciállal is rendelkezik.
+    Több mint egy évtizede foglalkozom juhászattal...
     </p>
-
-    <p>
-    Azóta tudatos és következetes tenyésztői munkával építem az állományt. A nyáj jelenleg mintegy 100 egyedből áll, és Békés vármegyében, Kaszaper térségében található.
-    </p>
-
-    <p>
-    A Dorperben azt ismertem fel, ami az európai körülmények között egyre fontosabbá válik: alkalmazkodóképesség, ellenálló képesség és gazdaságos tartás. A fajta jól teljesít szélsőségesebb időjárási viszonyok között is, kiváló takarmányhasznosítással rendelkezik, és kimagasló húsformákat produkál.
-    </p>
-
-    <p>
-    A célom nem a mennyiség, hanem egy megbízható, egységes genetikai háttér kialakítása, amely hosszú távon is értéket képvisel. A tenyészállatok értékesítése mellett szakmai tanácsadással is segítem az újonnan induló gazdákat. Igény esetén a szállítás megoldható.
-    </p>
-
 </section>
 
-<!-- IMAGE BLOKK -->
 <section class="image-block fade">
     <img src="farmv1.jpg">
     <div>
@@ -311,11 +336,16 @@ body {
     </div>
 </section>
 
-<!-- WHATSAPP -->
 <div class="whatsapp-bar">
     <a href="https://wa.me/36305726965?text=Érdeklődöm%20a%20Dorper%20juhokról" target="_blank">
         <i class="fab fa-whatsapp"></i> Legyen része a Dorper történetnek
     </a>
+</div>
+
+<!-- EASTER EGG -->
+<div class="easter-egg" id="eggBox" onclick="hatchEgg()">
+    <div class="egg" id="egg">🥚</div>
+    <div class="lamb" id="lamb">🐑</div>
 </div>
 
 <script>
@@ -335,6 +365,35 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+/* EASTER EGG - RANDOM + EGYSZER */
+const eggBox = document.getElementById("eggBox");
+
+if(localStorage.getItem("eggSeen")){
+    eggBox.style.display = "none";
+} else {
+    const x = Math.random() * (window.innerWidth - 80);
+    const y = Math.random() * (window.innerHeight - 160);
+
+    eggBox.style.left = x + "px";
+    eggBox.style.top = y + "px";
+}
+
+function hatchEgg() {
+    const egg = document.getElementById("egg");
+    const lamb = document.getElementById("lamb");
+
+    egg.classList.add("crack");
+
+    setTimeout(() => {
+        lamb.classList.add("show");
+    }, 400);
+
+    setTimeout(() => {
+        eggBox.style.opacity = "0";
+        localStorage.setItem("eggSeen", "true");
+    }, 2500);
+}
 
 </script>
 
