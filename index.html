@@ -229,8 +229,14 @@ body {
     z-index: 2000;
 }
 
+.egg img,
+.lamb img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
 .egg {
-    font-size: 42px;
     position: absolute;
 }
 
@@ -247,7 +253,6 @@ body {
 }
 
 .lamb {
-    font-size: 44px;
     position: absolute;
     opacity: 0;
     transform: scale(0);
@@ -344,8 +349,12 @@ body {
 
 <!-- EASTER EGG -->
 <div class="easter-egg" id="eggBox" onclick="hatchEgg()">
-    <div class="egg" id="egg">🥚</div>
-    <div class="lamb" id="lamb">🐑</div>
+    <div class="egg" id="egg">
+        <img src="egg.png">
+    </div>
+    <div class="lamb" id="lamb">
+        <img src="lamb.png">
+    </div>
 </div>
 
 <script>
@@ -366,7 +375,7 @@ window.addEventListener('scroll', () => {
     });
 });
 
-/* EASTER EGG - RANDOM + EGYSZER */
+/* EASTER EGG */
 const eggBox = document.getElementById("eggBox");
 
 if(localStorage.getItem("eggSeen")){
