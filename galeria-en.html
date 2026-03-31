@@ -7,87 +7,107 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* UGYANAZ a CSS mint a magyar – nem változtattam */
 body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
     background: #f4f4f4;
 }
 
+/* FELSŐ SÁV */
 .topbar {
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
     height: 80px;
     background: #f5efe6;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     z-index: 1000;
 }
+.top-logo { 
+    height: auto;
+    max-height: 90px;
+    transform: scale(1.05);
+    transition: 0.3s;
+}
 
-.top-logo { max-height: 90px; }
-
+/* 🔥 NYELVVÁLTÓ (EZ LETT JAVÍTVA) */
 .lang-switch {
     position: absolute;
     right: 20px;
     display: flex;
     gap: 10px;
 }
-
 .lang-switch img {
     height: 30px;
     cursor: pointer;
     opacity: 0.6;
 }
-
 .lang-switch .active {
     opacity: 1;
     border-bottom: 2px solid #8b6f47;
 }
 
+/* HAMBURGER */
 .menu-btn {
     position: fixed;
-    top: 40px;
+    top: 40px;              
     left: 20px;
     transform: translateY(-50%);
     font-size: 30px;
     cursor: pointer;
+    color: #333;
+    background: rgba(245,239,230,0.6);
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 1100;
 }
 
+/* OLDALSÓ MENÜ */
 .sidebar {
     position: fixed;
+    top: 0;
     left: -250px;
     width: 250px;
     height: 100%;
     background: #222;
     padding-top: 80px;
     transition: 0.3s;
+    z-index: 1050;
 }
-
 .sidebar a {
     display: block;
     color: white;
     padding: 15px;
     text-decoration: none;
 }
+.sidebar a:hover { background: #444; }
 
+/* CÍMEK */
 h1 {
     text-align: center;
     margin: 120px 0 20px 0;
+    font-weight: 600;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
+/* STORY BOX */
 .story-box {
     max-width: 1200px;
     margin: auto;
     background: #fff;
     padding: 20px 30px;
     border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-bottom: 40px;
     text-align: justify;
 }
 
+/* GRID */
 .gallery, .gallery-simple {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -96,54 +116,65 @@ h1 {
     margin: auto;
 }
 
+/* ELADÓ ÁLLATOK */
 .card {
     position: relative;
     border-radius: 10px;
     overflow: hidden;
 }
-
 .card img {
     width: 100%;
     height: 220px;
     object-fit: cover;
+    transition: transform 0.3s ease;
 }
+.card:hover img { transform: scale(1.05); }
 
-.overlay {
+.card .overlay {
     position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
     background: rgba(0,0,0,0.7);
-    color: white;
+    color: #fff;
     padding: 10px;
     transform: translateY(100%);
-    transition: 0.3s;
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    line-height: 1.4;
 }
+.card:hover .overlay { transform: translateY(0); }
 
-.card:hover .overlay {
-    transform: translateY(0);
-}
+.male .overlay { background-color: #4a90e2; }
+.female .overlay { background-color: #e94e77; }
 
+/* BÜSZKESÉGEINK */
 .gallery-simple img {
     width: 100%;
     height: 220px;
     object-fit: cover;
     border-radius: 10px;
+    transition: transform 0.3s;
 }
+.gallery-simple img:hover { transform: scale(1.03); }
 
+/* LIGHTBOX */
 .lightbox {
     display: none;
     position: fixed;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0,0,0,0.9);
     justify-content: center;
     align-items: center;
+    z-index: 2000;
 }
-
 .lightbox img {
     max-width: 90%;
     max-height: 90%;
 }
 
+/* WHATSAPP */
 .whatsapp-bar {
     position: fixed;
     bottom: 0;
@@ -153,15 +184,25 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
+}
+.whatsapp-bar a {
+    color: #075e54;
+    font-size: 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
 }
 </style>
 </head>
-
 <body>
 
 <div class="topbar">
     <img src="logo.png" class="top-logo">
 
+    <!-- 🔥 NYELVVÁLTÓ -->
     <div class="lang-switch">
         <a href="galeria.html"><img src="hu.png"></a>
         <img src="en.png" class="active">
@@ -171,31 +212,40 @@ h1 {
 <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
 <div id="menu" class="sidebar">
-    <a href="index-en.html">Home</a>
+   <a href="index-en.html">Home</a>
     <a href="rolunk-en.html">About</a>
     <a href="galeria-en.html">Gallery</a>
     <a href="kapcsolat-en.html">Contact</a>
 </div>
 
 <h1>Animals for Sale</h1>
-
 <div class="story-box">
-<p>
-The soul of the shepherd lives in the open plains, just like the outlaw who always seeks freedom.
-</p>
+    <p>The soul of the shepherd lives in the open plains, just like the outlaw who is always searching for freedom and his own path.</p>
 </div>
 
 <div class="gallery">
-    <div class="card">
+    <div class="card male">
         <img src="1.jpg" onclick="openImg(this.src)">
         <div class="overlay">Father: 330110<br>Mother: 345611<br>Weight at 3 months: 26 kg</div>
+    </div>
+    <div class="card female">
+        <img src="2.jpg" onclick="openImg(this.src)">
+        <div class="overlay">Father: 330110<br>Mother: 345612<br>Weight at 3 months: 29 kg</div>
+    </div>
+    <div class="card male">
+        <img src="3.jpg" onclick="openImg(this.src)">
+        <div class="overlay">Father: 330110<br>Mother: 8851216<br>Weight at 3 months: 28 kg</div>
     </div>
 </div>
 
 <h1>Our Pride</h1>
-
 <div class="gallery-simple">
     <img src="4.jpg" onclick="openImg(this.src)">
+    <img src="5.jpg" onclick="openImg(this.src)">
+    <img src="6.jpg" onclick="openImg(this.src)">
+    <img src="7.jpg" onclick="openImg(this.src)">
+    <img src="8.jpg" onclick="openImg(this.src)">
+    <img src="9.jpg" onclick="openImg(this.src)">
 </div>
 
 <div class="lightbox" id="lightbox" onclick="closeImg()">
@@ -203,22 +253,22 @@ The soul of the shepherd lives in the open plains, just like the outlaw who alwa
 </div>
 
 <div class="whatsapp-bar">
-    <a href="https://wa.me/36305726965">
+    <a href="https://wa.me/36305726965" target="_blank">
         <i class="fab fa-whatsapp"></i> Be part of the Dorper story
     </a>
 </div>
 
 <script>
-function openImg(src){
-document.getElementById("lightbox").style.display="flex";
-document.getElementById("lightbox-img").src=src;
+function openImg(src) {
+    document.getElementById("lightbox").style.display = "flex";
+    document.getElementById("lightbox-img").src = src;
 }
-function closeImg(){
-document.getElementById("lightbox").style.display="none";
+function closeImg() {
+    document.getElementById("lightbox").style.display = "none";
 }
-function toggleMenu(){
-let menu=document.getElementById("menu");
-menu.style.left=(menu.style.left==="0px")?"-250px":"0px";
+function toggleMenu() {
+    let menu = document.getElementById("menu");
+    menu.style.left = (menu.style.left === "0px") ? "-250px" : "0px";
 }
 </script>
 
