@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Gallery - KrisDorper Genetics</title>
+<title>About - KrisDorper Genetics</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-/* UGYANAZ a CSS mint a magyar – nem változtattam */
 body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
@@ -19,14 +18,11 @@ body {
     top: 0;
     width: 100%;
     height: 80px;
-    background: #f5efe6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    background:#f5efe6;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
-
-.top-logo { max-height: 90px; }
 
 .lang-switch {
     position: absolute;
@@ -37,7 +33,6 @@ body {
 
 .lang-switch img {
     height: 30px;
-    cursor: pointer;
     opacity: 0.6;
 }
 
@@ -50,8 +45,7 @@ body {
     position: fixed;
     top: 40px;
     left: 20px;
-    transform: translateY(-50%);
-    font-size: 30px;
+    font-size: 28px;
     cursor: pointer;
 }
 
@@ -66,82 +60,30 @@ body {
 }
 
 .sidebar a {
-    display: block;
     color: white;
+    display: block;
     padding: 15px;
     text-decoration: none;
 }
 
-h1 {
-    text-align: center;
-    margin: 120px 0 20px 0;
-    text-transform: uppercase;
+.content {
+    max-width: 900px;
+    margin: 120px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
 }
 
-.story-box {
-    max-width: 1200px;
-    margin: auto;
-    background: #fff;
-    padding: 20px 30px;
-    border-radius: 10px;
+.stats {
+    display: flex;
+    justify-content: space-around;
     margin-bottom: 40px;
-    text-align: justify;
 }
 
-.gallery, .gallery-simple {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    max-width: 1200px;
-    margin: auto;
-}
-
-.card {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.card img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-}
-
-.overlay {
-    position: absolute;
-    bottom: 0;
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 10px;
-    transform: translateY(100%);
-    transition: 0.3s;
-}
-
-.card:hover .overlay {
-    transform: translateY(0);
-}
-
-.gallery-simple img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.lightbox {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.9);
-    justify-content: center;
-    align-items: center;
-}
-
-.lightbox img {
-    max-width: 90%;
-    max-height: 90%;
+.stat h3 {
+    color: #8b6f47;
+    font-size: 36px;
+    text-align: center;
 }
 
 .whatsapp-bar {
@@ -149,10 +91,10 @@ h1 {
     bottom: 0;
     width: 100%;
     height: 60px;
-    background: #f5efe6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background:#f5efe6;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 </style>
 </head>
@@ -160,10 +102,10 @@ h1 {
 <body>
 
 <div class="topbar">
-    <img src="logo.png" class="top-logo">
+    <img src="logo.png" style="max-height:90px;">
 
     <div class="lang-switch">
-        <a href="galeria.html"><img src="hu.png"></a>
+        <a href="rolunk.html"><img src="hu.png"></a>
         <img src="en.png" class="active">
     </div>
 </div>
@@ -177,45 +119,54 @@ h1 {
     <a href="kapcsolat-en.html">Contact</a>
 </div>
 
-<h1>Animals for Sale</h1>
+<div class="content">
 
-<div class="story-box">
-<p>
-The soul of the shepherd lives in the open plains, just like the outlaw who always seeks freedom.
-</p>
-</div>
-
-<div class="gallery">
-    <div class="card">
-        <img src="1.jpg" onclick="openImg(this.src)">
-        <div class="overlay">Father: 330110<br>Mother: 345611<br>Weight at 3 months: 26 kg</div>
+<div class="stats">
+    <div class="stat">
+        <h3>10+</h3>
+        <p>years experience</p>
+    </div>
+    <div class="stat">
+        <h3>100+</h3>
+        <p>animals</p>
+    </div>
+    <div class="stat">
+        <h3>100%</h3>
+        <p>pure genetics</p>
     </div>
 </div>
 
-<h1>Our Pride</h1>
+<h2>Who we are</h2>
 
-<div class="gallery-simple">
-    <img src="4.jpg" onclick="openImg(this.src)">
-</div>
+<p>
+For more than a decade, I have been involved in sheep farming. I first encountered the Dorper breed during my university years under the professional guidance of Dr. János Oláh.
+</p>
 
-<div class="lightbox" id="lightbox" onclick="closeImg()">
-    <img id="lightbox-img">
+<p>
+Since then, I have been building the flock through conscious and consistent breeding work. The herd currently consists of around 100 animals and is located in Békés county, near Kaszaper.
+</p>
+
+<p>
+What I recognized in the Dorper is what is becoming increasingly important in European conditions: adaptability, resilience, and cost-effective keeping.
+</p>
+
+<h2>Why choose us</h2>
+
+<ul>
+<li>Reliable genetics</li>
+<li>High quality breeding stock</li>
+<li>Professional support</li>
+</ul>
+
 </div>
 
 <div class="whatsapp-bar">
     <a href="https://wa.me/36305726965">
-        <i class="fab fa-whatsapp"></i> Be part of the Dorper story
+        Be part of the Dorper story
     </a>
 </div>
 
 <script>
-function openImg(src){
-document.getElementById("lightbox").style.display="flex";
-document.getElementById("lightbox-img").src=src;
-}
-function closeImg(){
-document.getElementById("lightbox").style.display="none";
-}
 function toggleMenu(){
 let menu=document.getElementById("menu");
 menu.style.left=(menu.style.left==="0px")?"-250px":"0px";
