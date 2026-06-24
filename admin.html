@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Admin – KrisDorper Genetics</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+    --cream: #f5efe6;
+    --brown: #8b6f47;
+    --dark: #2c2520;
+    --green: #2e7d5e;
+    --red: #c0392b;
+    --light: #faf7f2;
+    --border: #e0d5c8;
+    --blue: #2c6ea6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Montserrat', sans-serif; background: var(--light); color: var(--dark); min-height: 100vh; }
+
+/* LOGIN */
+#loginScreen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--dark) 0%,#4a3728 100%); }
+.login-box { background:white; padding:50px 45px; border-radius:20px; width:360px; text-align:center; box-shadow:0 30px 80px rgba(0,0,0,0.4); }
+.login-box img.logo { width:100px; margin-bottom:20px; }
+.login-box h2 { font-weight:700; font-size:18px; color:var(--dark); margin-bottom:6px; letter-spacing:1px; text-transform:uppercase; }
+.login-box p { color:#999; font-size:13px; margin-bottom:30px; }
+.login-box input { width:100%; padding:14px 16px; border:2px solid var(--border); border-radius:10px; font-family:'Montserrat',sans-serif; font-size:15px; outline:none; transition:0.3s; margin-bottom:15px; text-align:center; letter-spacing:3px; }
+.login-box input:focus { border-color:var(--brown); }
+.login-box button { width:100%; padding:14px; background:var(--brown); color:white; border:none; border-radius:10px; font-family:'Montserrat',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:0.2s; letter-spacing:1px; }
+.login-box button:hover { background:#7a6040; }
+#loginError { margin-top:14px; color:var(--red); font-size:13px; display:none; }
+
+/* ADMIN */
+#adminPanel { display:none; }
+.topbar { position:sticky; top:0; width:100%; height:65px; background:var(--dark); display:flex; align-items:center; justify-content:space-between; padding:0 30px; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+.topbar-left { display:flex; align-items:center; gap:14px; }
+.topbar-left img { height:38px; filter:brightness(0) invert(1); opacity:0.85; }
+.topbar-left h1 { font-size:15px; color:white; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; }
+.topbar-right { display:flex; align-items:center; gap:15px; }
+.topbar-right a { color:rgba(255,255,255,0.6); font-size:13px; text-decoration:none; transition:0.2s; }
+.topbar-right a:hover { color:white; }
+.btn-logout { padding:8px 18px; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); border-radius:8px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:13px; transition:0.2s; }
+.btn-logout:hover { background:rgba(255,255,255,0.2); }
+
+/* TABS */
+.tabs { background:white; border-bottom:2px solid var(--border); display:flex; padding:0 30px; }
+.tab { padding:16px 22px; font-size:13px; font-weight:600; letter-spacing:0.5px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:0.2s; color:#aaa; }
+.tab:hover { color:var(--brown); }
+.tab.active { color:var(--brown); border-bottom-color:var(--brown); }
+
+/* MAIN */
+.main { max-width:1200px; margin:0 auto; padding:35px 25px 80px; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* KPI */
+.kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:35px; }
+.kpi-card { background:white; border-radius:15px; padding:25px 28px; border-left:5px solid transparent; box-shadow:0 2px 15px rgba(0,0,0,0.06); }
+.kpi-card.income { border-color:var(--green); }
+.kpi-card.expense { border-color:var(--red); }
+.kpi-card.balance { border-color:var(--brown); }
+.kpi-label { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:#aaa; margin-bottom:10px; }
+.kpi-value { font-size:30px; font-weight:700; line-height:1; }
+.kpi-card.income .kpi-value { color:var(--green); }
+.kpi-card.expense .kpi-value { color:var(--red); }
+.kpi-card.balance .kpi-value { color:var(--brown); }
+.kpi-sub { font-size:12px; color:#bbb; margin-top:8px; }
+
+/* FILTER */
+.filter-row { display:flex; align-items:center; gap:12px; margin-bottom:28px; flex-wrap:wrap; }
+.filter-row label { font-size:13px; font-weight:600; color:#888; letter-spacing:1px; text-transform:uppercase; }
+.filter-row select { padding:9px 16px; border:2px solid var(--border); border-radius:8px; font-family:'Montserrat',sans-serif; font-size:14px; background:white; cursor:pointer; outline:none; transition:0.2s; }
+.filter-row select:focus { border-color:var(--brown); }
+
+/* CHARTS */
+.charts-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px; }
+.chart-box { background:white; border-radius:15px; padding:25px; box-shadow:0 2px 15px rgba(0,0,0,0.06); }
+.chart-box h3 { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#aaa; margin-bottom:20px; }
+.chart-box canvas { max-height:260px; }
+
+/* SECTION TITLE */
+.section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--brown); margin-bottom:15px; display:flex; align-items:center; gap:8px; }
+
+/* ADD FORM */
+.add-form-box { background:white; border-radius:15px; padding:28px; margin-bottom:30px; box-shadow:0 2px 15px rgba(0,0,0,0.06); }
+.add-form-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:12px; align-items:end; }
+.form-group label { display:block; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#aaa; margin-bottom:7px; }
+.form-group input, .form-group select { width:100%; padding:10px 13px; border:2px solid var(--border); border-radius:9px; font-family:'Montserrat',sans-serif; font-size:14px; outline:none; transition:0.2s; background:white; }
+.form-group input:focus, .form-group select:focus { border-color:var(--brown); }
+.btn-add { padding:11px 20px; background:var(--brown); color:white; border:none; border-radius:9px; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s; width:100%; }
+.btn-add:hover { background:#7a6040; }
+
+/* TABLE */
+.table-box { background:white; border-radius:15px; padding:25px; box-shadow:0 2px 15px rgba(0,0,0,0.06); overflow-x:auto; }
+.table-controls { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+.search-box { padding:9px 14px; border:2px solid var(--border); border-radius:9px; font-family:'Montserrat',sans-serif; font-size:14px; outline:none; transition:0.2s; width:220px; }
+.search-box:focus { border-color:var(--brown); }
+.btn-export { padding:9px 18px; background:var(--dark); color:white; border:none; border-radius:9px; font-family:'Montserrat',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:0.2s; display:flex; align-items:center; gap:7px; }
+.btn-export:hover { background:#3a2d27; }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+thead th { padding:10px 14px; text-align:left; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#bbb; border-bottom:2px solid var(--border); }
+tbody tr { border-bottom:1px solid #f0ebe3; transition:0.15s; }
+tbody tr:hover { background:#faf7f2; }
+tbody tr:last-child { border-bottom:none; }
+td { padding:11px 14px; vertical-align:middle; }
+.badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.5px; }
+.badge-income { background:#e8f5ef; color:var(--green); }
+.badge-expense { background:#fdecea; color:var(--red); }
+.amount-income { color:var(--green); font-weight:700; }
+.amount-expense { color:var(--red); font-weight:700; }
+.btn-delete { background:none; border:none; color:#ddd; cursor:pointer; font-size:14px; padding:5px; transition:0.2s; border-radius:5px; }
+.btn-delete:hover { color:var(--red); background:#fdecea; }
+
+/* EUR BAR */
+.eur-bar { display:flex; align-items:center; gap:10px; margin-bottom:25px; padding:14px 20px; background:white; border-radius:12px; border-left:4px solid #f0c040; box-shadow:0 2px 10px rgba(0,0,0,0.05); font-size:13px; }
+.eur-bar input { width:90px; padding:7px 12px; border:2px solid var(--border); border-radius:7px; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:600; outline:none; }
+.eur-bar input:focus { border-color:var(--brown); }
+.eur-bar button { padding:7px 14px; background:var(--brown); color:white; border:none; border-radius:7px; font-family:'Montserrat',sans-serif; font-size:13px; cursor:pointer; }
+
+/* ÁLLOMÁNY TAB */
+.allomany-kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:15px; margin-bottom:30px; }
+.allomany-kpi { background:white; border-radius:12px; padding:18px 20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); text-align:center; }
+.allomany-kpi .val { font-size:32px; font-weight:700; color:var(--brown); }
+.allomany-kpi .lbl { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#bbb; margin-top:5px; }
+.allomany-table-box { background:white; border-radius:15px; padding:25px; box-shadow:0 2px 15px rgba(0,0,0,0.06); overflow-x:auto; margin-bottom:30px; }
+.year-summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; margin-bottom:30px; }
+.year-card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border-top:4px solid var(--brown); }
+.year-card h4 { font-size:18px; font-weight:700; color:var(--brown); margin-bottom:12px; }
+.year-card table { font-size:12px; }
+.year-card td { padding:4px 8px; }
+
+/* PÉNZÜGYI ÖSSZESÍTŐ */
+.osszesito-table { background:white; border-radius:15px; padding:25px; box-shadow:0 2px 15px rgba(0,0,0,0.06); overflow-x:auto; margin-bottom:30px; }
+.osszesito-table table th { background:#faf7f2; }
+.positive { color:var(--green); font-weight:700; }
+.negative { color:var(--red); font-weight:700; }
+
+/* TOAST */
+.toast { position:fixed; bottom:30px; right:30px; background:var(--dark); color:white; padding:14px 22px; border-radius:10px; font-size:14px; font-weight:500; box-shadow:0 8px 30px rgba(0,0,0,0.2); opacity:0; transition:0.3s; z-index:9999; pointer-events:none; }
+.toast.show { opacity:1; }
+
+@media(max-width:900px){
+    .kpi-row { grid-template-columns:1fr; }
+    .charts-row { grid-template-columns:1fr; }
+    .add-form-grid { grid-template-columns:1fr 1fr; }
+    .allomany-kpi-row { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-box">
+        <img src="logo.png" class="logo" onerror="this.style.display='none'">
+        <h2>KrisDorper Admin</h2>
+        <p>Csak jogosult felhasználók léphetnek be</p>
+        <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') tryLogin()">
+        <button onclick="tryLogin()"><i class="fas fa-sign-in-alt"></i> &nbsp;Belépés</button>
+        <div id="loginError">Helytelen jelszó. Próbáld újra.</div>
+    </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminPanel">
+<div class="topbar">
+    <div class="topbar-left">
+        <img src="logo.png" onerror="this.style.display='none'">
+        <h1>KrisDorper &mdash; Admin</h1>
+    </div>
+    <div class="topbar-right">
+        <a href="index.html"><i class="fas fa-home"></i> Főoldal</a>
+        <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Kilépés</button>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('penzugyek')"><i class="fas fa-chart-line"></i> &nbsp;Pénzügyek</div>
+    <div class="tab" onclick="switchTab('allomany')"><i class="fas fa-sheep"></i> &nbsp;Állomány</div>
+    <div class="tab" onclick="switchTab('osszesito')"><i class="fas fa-table"></i> &nbsp;Éves összesítő</div>
+</div>
+
+<!-- ====== PÉNZÜGYEK TAB ====== -->
+<div id="tab-penzugyek" class="tab-content active">
+<div class="main">
+
+    <div class="eur-bar">
+        <i class="fas fa-euro-sign" style="color:#f0c040"></i>
+        <span>EUR árfolyam (HUF):</span>
+        <input type="number" id="eurRate" value="365" min="1">
+        <button onclick="saveEurRate()">Mentés</button>
+        <span id="eurRateNote" style="color:#aaa;font-size:12px;"></span>
+    </div>
+
+    <div class="filter-row">
+        <label><i class="fas fa-filter"></i> &nbsp;Szűrés évre:</label>
+        <select id="yearFilter" onchange="refresh()">
+            <option value="all">Összes év</option>
+        </select>
+    </div>
+
+    <div class="kpi-row">
+        <div class="kpi-card income">
+            <div class="kpi-label">Összes bevétel</div>
+            <div class="kpi-value" id="kpiIncome">0 Ft</div>
+            <div class="kpi-sub" id="kpiIncomeEur"></div>
+        </div>
+        <div class="kpi-card expense">
+            <div class="kpi-label">Összes kiadás</div>
+            <div class="kpi-value" id="kpiExpense">0 Ft</div>
+            <div class="kpi-sub" id="kpiExpenseEur"></div>
+        </div>
+        <div class="kpi-card balance">
+            <div class="kpi-label">Egyenleg</div>
+            <div class="kpi-value" id="kpiBalance">0 Ft</div>
+            <div class="kpi-sub" id="kpiBalanceEur"></div>
+        </div>
+    </div>
+
+    <div class="charts-row">
+        <div class="chart-box">
+            <h3><i class="fas fa-chart-bar"></i> &nbsp;Havi bevétel / kiadás</h3>
+            <canvas id="chartMonthly"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3><i class="fas fa-chart-pie"></i> &nbsp;Kiadás kategóriánként</h3>
+            <canvas id="chartCategory"></canvas>
+        </div>
+    </div>
+
+    <div class="add-form-box">
+        <div class="section-title"><i class="fas fa-plus-circle"></i> Új tétel hozzáadása</div>
+        <div class="add-form-grid">
+            <div class="form-group">
+                <label>Év</label>
+                <input type="number" id="fEv" value="2026" min="2015" max="2099">
+            </div>
+            <div class="form-group">
+                <label>Hónap</label>
+                <select id="fHonap">
+                    <option value="1">Január</option><option value="2">Február</option>
+                    <option value="3">Március</option><option value="4">Április</option>
+                    <option value="5">Május</option><option value="6">Június</option>
+                    <option value="7">Július</option><option value="8">Augusztus</option>
+                    <option value="9">Szeptember</option><option value="10">Október</option>
+                    <option value="11">November</option><option value="12">December</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Összeg (Ft)</label>
+                <input type="number" id="fOsszeg" placeholder="pl. 50000">
+            </div>
+            <div class="form-group">
+                <label>Bevétel / Kiadás</label>
+                <select id="fTipus" onchange="updateKategoria()">
+                    <option value="Bevétel">Bevétel</option>
+                    <option value="Kiadás">Kiadás</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kategória</label>
+                <select id="fKategoria" onchange="updateAlkategoria()"></select>
+            </div>
+            <div class="form-group">
+                <label>Alkategória</label>
+                <select id="fAlkategoria"></select>
+            </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
+            <div class="form-group" style="flex:1;">
+                <label>Megjegyzés (opcionális)</label>
+                <input type="text" id="fMegjegyzes" placeholder="pl. kos neve, szállító...">
+            </div>
+            <div style="margin-top:18px;">
+                <button class="btn-add" onclick="addEntry()"><i class="fas fa-plus"></i> &nbsp;Hozzáadás</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-box">
+        <div class="section-title"><i class="fas fa-list"></i> Tételek</div>
+        <div class="table-controls">
+            <input class="search-box" type="text" placeholder="Keresés..." id="searchBox" oninput="refresh()">
+            <button class="btn-export" onclick="exportCSV()"><i class="fas fa-download"></i> CSV export</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Év</th><th>Hónap</th><th>Összeg</th><th>Típus</th>
+                    <th>Kategória</th><th>Alkategória</th><th>Megjegyzés</th><th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <div id="tableEmpty" style="text-align:center;padding:40px;color:#ccc;display:none;">
+            <i class="fas fa-inbox" style="font-size:30px;margin-bottom:10px;"></i><br>Nincs megjeleníthető tétel.
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ====== ÁLLOMÁNY TAB ====== -->
+<div id="tab-allomany" class="tab-content">
+<div class="main">
+
+    <div class="filter-row">
+        <label><i class="fas fa-filter"></i> &nbsp;Év:</label>
+        <select id="allomanyYearFilter" onchange="refreshAllomany()">
+            <option value="all">Összes</option>
+        </select>
+    </div>
+
+    <div class="allomany-kpi-row" id="allomanyKpis"></div>
+
+    <div class="charts-row">
+        <div class="chart-box">
+            <h3><i class="fas fa-chart-line"></i> &nbsp;Állomány alakulása (összes egyed)</h3>
+            <canvas id="chartAllomany"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3><i class="fas fa-chart-pie"></i> &nbsp;Jelenlegi összetétel</h3>
+            <canvas id="chartOsszetetel"></canvas>
+        </div>
+    </div>
+
+    <div class="allomany-table-box">
+        <div class="section-title"><i class="fas fa-list"></i> Állomány változás napló</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Év</th><th>Hónap</th><th>Besorolás</th><th>Esemény</th><th>Változás</th><th>Összlétszám</th>
+                </tr>
+            </thead>
+            <tbody id="allomanyTableBody"></tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<!-- ====== ÖSSZESÍTŐ TAB ====== -->
+<div id="tab-osszesito" class="tab-content">
+<div class="main">
+
+    <div class="charts-row">
+        <div class="chart-box">
+            <h3><i class="fas fa-chart-bar"></i> &nbsp;Éves bevétel vs kiadás</h3>
+            <canvas id="chartEves"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3><i class="fas fa-chart-line"></i> &nbsp;Éves haszon alakulása</h3>
+            <canvas id="chartHaszon"></canvas>
+        </div>
+    </div>
+
+    <div class="osszesito-table">
+        <div class="section-title"><i class="fas fa-table"></i> Éves pénzügyi összesítő</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Év</th><th>Bevétel</th><th>Kiadás</th><th>Haszon</th><th>Haszon %</th>
+                </tr>
+            </thead>
+            <tbody id="osszesitoTableBody"></tbody>
+        </table>
+    </div>
+
+</div>
+</div>
+
+</div><!-- /adminPanel -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== PASSWORD =====
+const PASS = "dorper2024";
+
+function tryLogin() {
+    if (document.getElementById('pwInput').value === PASS) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        init();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('pwInput').value = '';
+    }
+}
+function logout() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('loginError').style.display = 'none';
+}
+
+// ===== TABS =====
+function switchTab(name) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (name === 'allomany') refreshAllomany();
+    if (name === 'osszesito') refreshOsszesito();
+}
+
+// ===== CATEGORIES =====
+const CATEGORIES = {
+    "Bevétel": {
+        "Értékesítés": ["Növendék kos","Tenyészkos","Jerke","Jerke eladás","Anyajuh értékesítés","Bárány eladás","Vegyes birka leadás","Előleg","Széna értékesítés"],
+        "Egyéb bevétel": ["Lucerna értékesítés","Kukorica értékesítés","Kukorica eladás","Széna értékesítés","Tejpor értékesítés","Búza értékesítés","Árpa értékesítés","Kapuk eladás","Kényszer vágás","Egyéb"],
+        "Támogatás": ["Anyajuh támogatás","Kos támogatás","Egyéb"],
+        "Sajtá tőke": ["Sajtá tőke"],
+    },
+    "Kiadás": {
+        "Takarmány": ["Széna","Szalma","Lucerna","Zöldség","Táp","Árpa","Pellet","Gyepszéna","Répa","Tej","Zab vásárlás","Búza vásárlás","Egyéb"],
+        "Alkalmazott": ["Husi","Tóth Zoli","Trágyázás","Birkanyírás","Körmölés","Here betakarítás","Pakolás","Egyéb munkabér"],
+        "Állategészségügy": ["Gyógyszer","Állatorvos","Oltás","Féreghajtás","Nyalósó","Légyölő","Szénpor","Patkány méreg","Birkanyírás","Egyéb"],
+        "MJKSZ": ["Tagdíj","Krotália","Fülszám","Származási lapok","Törzskönyv","Szállítólevél","Jelölés","Leltár","Nőivarú törzskönyv","Instruktor","Egyéb"],
+        "Géppark": ["MTZ","Alkatrész","Javítás","Egyéb"],
+        "Vásárlás": ["Juh vásárlás","Tenyészkos vásárlás","Jerke vásárlás","Egyéb állatvásárlás"],
+        "Eszköz": ["Etető","Villanypásztor","Mérleg","Vályú","Raklap","Fólia","Lámpa","Kamera","Takaró","Árnékoló","Faanyag","Kerítés","Válogató kapu","Fűkasza","Kábel védő","Vas kapu","Víz melegítő","Fecskendő","Villanyszerelés","Egyéb"],
+        "Bérlemény": ["Bobicsek","Mismus","Zsuzsika néni kertje","Kaszálás","Földbérlet OH","Fűnyírás","Víz számla","Egyéb"],
+        "Közművek": ["Villanyszámla","Víz számla","Egyéb"],
+        "Egyéb kiadás": ["Apró tételek","Posta","Szofi","Egyéb"],
+        "Adó": ["Iparűzési adó","Egyéb"],
+        "Eszköz ráfordítás": ["MTZ","Egyéb"],
+    }
+};
+
+function updateKategoria() {
+    const tipus = document.getElementById('fTipus').value;
+    const kSel = document.getElementById('fKategoria');
+    kSel.innerHTML = '';
+    Object.keys(CATEGORIES[tipus]).forEach(k => kSel.innerHTML += `<option value="${k}">${k}</option>`);
+    updateAlkategoria();
+}
+function updateAlkategoria() {
+    const tipus = document.getElementById('fTipus').value;
+    const kat = document.getElementById('fKategoria').value;
+    const aSel = document.getElementById('fAlkategoria');
+    aSel.innerHTML = '';
+    (CATEGORIES[tipus][kat] || []).forEach(a => aSel.innerHTML += `<option value="${a}">${a}</option>`);
+}
+
+// ===== STATIC DATA FROM EXCEL =====
+// Kiadás-Bevétel teljes sheet
+const PENZ_DATA_STATIC = [
+  {ev:2026,honap:1,osszeg:-18000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2026,honap:1,osszeg:-36000,tipus:"Kiadás",alkategoria:"Szalma",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:1,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:1,osszeg:-15000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:1,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:1,osszeg:-12000,tipus:"Kiadás",alkategoria:"Szalma",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:1,osszeg:-45000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2026,honap:1,osszeg:-120000,tipus:"Kiadás",alkategoria:"Tagdíj",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:1,osszeg:-7000,tipus:"Kiadás",alkategoria:"Krotália",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:1,osszeg:136500,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:1,osszeg:136500,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:1,osszeg:136500,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:1,osszeg:-18000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2026,honap:2,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:2,osszeg:-12000,tipus:"Kiadás",alkategoria:"Szalma",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:2,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:2,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:2,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:2,osszeg:-15000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2026,honap:2,osszeg:-16500,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2026,honap:2,osszeg:-20000,tipus:"Kiadás",alkategoria:"Gyógyszer",kategoria:"Állategészségügy",megj:""},
+  {ev:2026,honap:2,osszeg:-52000,tipus:"Kiadás",alkategoria:"Származási lapok",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:2,osszeg:-58000,tipus:"Kiadás",alkategoria:"Származási lapok",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:2,osszeg:-4000,tipus:"Kiadás",alkategoria:"Fülszám",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:2,osszeg:600000,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:2,osszeg:-18000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2026,honap:3,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:3,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:3,osszeg:-40000,tipus:"Kiadás",alkategoria:"Széna",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:3,osszeg:-6000,tipus:"Kiadás",alkategoria:"Szalma",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:3,osszeg:-12000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:3,osszeg:-53000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2026,honap:3,osszeg:-4000,tipus:"Kiadás",alkategoria:"Gyógyszer",kategoria:"Állategészségügy",megj:""},
+  {ev:2026,honap:3,osszeg:286000,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:3,osszeg:585000,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:3,osszeg:-232000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2026,honap:3,osszeg:-900000,tipus:"Kiadás",alkategoria:"MTZ",kategoria:"Géppark",megj:""},
+  {ev:2026,honap:3,osszeg:600000,tipus:"Bevétel",alkategoria:"Jerke",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:4,osszeg:-24000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:4,osszeg:-38000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:4,osszeg:-40000,tipus:"Kiadás",alkategoria:"Pellet",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:4,osszeg:-66000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2026,honap:4,osszeg:-10000,tipus:"Kiadás",alkategoria:"Gyógyszer",kategoria:"Állategészségügy",megj:""},
+  {ev:2026,honap:4,osszeg:-5000,tipus:"Kiadás",alkategoria:"Szállítólevél",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:4,osszeg:-40000,tipus:"Kiadás",alkategoria:"Törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:4,osszeg:400000,tipus:"Bevétel",alkategoria:"Jerke",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:4,osszeg:-157000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2026,honap:5,osszeg:-22000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:5,osszeg:-24000,tipus:"Kiadás",alkategoria:"Szalma",kategoria:"Takarmány",megj:""},
+  {ev:2026,honap:5,osszeg:-39000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2026,honap:5,osszeg:-45000,tipus:"Kiadás",alkategoria:"Gyógyszer",kategoria:"Állategészségügy",megj:""},
+  {ev:2026,honap:5,osszeg:-20000,tipus:"Kiadás",alkategoria:"Krotália",kategoria:"MJKSZ",megj:""},
+  {ev:2026,honap:5,osszeg:20000,tipus:"Bevétel",alkategoria:"Kukorica értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2026,honap:5,osszeg:1900000,tipus:"Bevétel",alkategoria:"Jerke",kategoria:"Értékesítés",megj:""},
+  {ev:2026,honap:5,osszeg:-249000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:1,osszeg:-15000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:1,osszeg:-80000,tipus:"Kiadás",alkategoria:"Tagdíj",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:1,osszeg:-56000,tipus:"Kiadás",alkategoria:"Krotália",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:1,osszeg:-33000,tipus:"Kiadás",alkategoria:"Származási lapok",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:1,osszeg:50000,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:1,osszeg:1580000,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:1,osszeg:85000,tipus:"Bevétel",alkategoria:"Lucerna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:2,osszeg:-190000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:2,osszeg:-24000,tipus:"Kiadás",alkategoria:"Lucerna",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:2,osszeg:-35000,tipus:"Kiadás",alkategoria:"Nőivarú törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:2,osszeg:312500,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:3,osszeg:-272000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:3,osszeg:-30000,tipus:"Kiadás",alkategoria:"Gyógyszer",kategoria:"Állategészségügy",megj:""},
+  {ev:2025,honap:3,osszeg:-56000,tipus:"Kiadás",alkategoria:"Leltár",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:4,osszeg:-135000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:4,osszeg:-92000,tipus:"Kiadás",alkategoria:"Lucerna",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:4,osszeg:-55000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:4,osszeg:15000,tipus:"Bevétel",alkategoria:"Tejpor értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:5,osszeg:-130000,tipus:"Kiadás",alkategoria:"Táp",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:5,osszeg:-15000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:5,osszeg:-137000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:5,osszeg:-16000,tipus:"Kiadás",alkategoria:"Krotália",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:5,osszeg:-56000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:5,osszeg:110000,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:5,osszeg:319000,tipus:"Bevétel",alkategoria:"Lucerna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:6,osszeg:-18000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:6,osszeg:-35000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:6,osszeg:-90000,tipus:"Kiadás",alkategoria:"Táp",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:6,osszeg:-600000,tipus:"Kiadás",alkategoria:"Gyepszéna",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:6,osszeg:-615000,tipus:"Kiadás",alkategoria:"Árpa",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:6,osszeg:-68000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:6,osszeg:-42000,tipus:"Kiadás",alkategoria:"Gyógyszer",kategoria:"Állategészségügy",megj:""},
+  {ev:2025,honap:6,osszeg:-5000,tipus:"Kiadás",alkategoria:"Törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:6,osszeg:-28000,tipus:"Kiadás",alkategoria:"Jelölés",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:6,osszeg:109000,tipus:"Bevétel",alkategoria:"Lucerna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:6,osszeg:150000,tipus:"Bevétel",alkategoria:"Széna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:6,osszeg:106000,tipus:"Bevétel",alkategoria:"Kukorica értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:6,osszeg:-300000,tipus:"Kiadás",alkategoria:"Juh vásárlás",kategoria:"Vásárlás",megj:""},
+  {ev:2025,honap:7,osszeg:-47000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:7,osszeg:-10000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:7,osszeg:-408000,tipus:"Kiadás",alkategoria:"Lucerna",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:7,osszeg:-288000,tipus:"Kiadás",alkategoria:"Széna",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:7,osszeg:-90000,tipus:"Kiadás",alkategoria:"Táp",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:7,osszeg:-51000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:7,osszeg:-65000,tipus:"Kiadás",alkategoria:"Nőivarú törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:7,osszeg:145000,tipus:"Bevétel",alkategoria:"Jerke",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:7,osszeg:432000,tipus:"Bevétel",alkategoria:"Széna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:7,osszeg:256000,tipus:"Bevétel",alkategoria:"Lucerna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:8,osszeg:-53000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:8,osszeg:-90000,tipus:"Kiadás",alkategoria:"Törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:8,osszeg:699000,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:9,osszeg:-4500,tipus:"Kiadás",alkategoria:"Szállítólevél",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:9,osszeg:480000,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:10,osszeg:-775000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:10,osszeg:-310000,tipus:"Kiadás",alkategoria:"Széna",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:10,osszeg:-49000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:10,osszeg:-45000,tipus:"Kiadás",alkategoria:"Táp",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:10,osszeg:-85000,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:10,osszeg:-10000,tipus:"Kiadás",alkategoria:"Törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:10,osszeg:1445000,tipus:"Bevétel",alkategoria:"Anyajuh támogatás",kategoria:"Támogatás",megj:""},
+  {ev:2025,honap:10,osszeg:250000,tipus:"Bevétel",alkategoria:"Növendék kos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:10,osszeg:130000,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:10,osszeg:600000,tipus:"Bevétel",alkategoria:"Jerke",kategoria:"Értékesítés",megj:""},
+  {ev:2025,honap:10,osszeg:650000,tipus:"Bevétel",alkategoria:"Lucerna értékesítés",kategoria:"Egyéb bevétel",megj:""},
+  {ev:2025,honap:10,osszeg:-560000,tipus:"Kiadás",alkategoria:"Juh vásárlás",kategoria:"Vásárlás",megj:""},
+  {ev:2025,honap:11,osszeg:-132000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:11,osszeg:-25000,tipus:"Kiadás",alkategoria:"Zöldség",kategoria:"Takarmány",megj:""},
+  {ev:2025,honap:11,osszeg:-37500,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:12,osszeg:-612000,tipus:"Kiadás",alkategoria:"Apró tételek",kategoria:"Egyéb kiadás",megj:""},
+  {ev:2025,honap:12,osszeg:-37500,tipus:"Kiadás",alkategoria:"Husi",kategoria:"Alkalmazott",megj:""},
+  {ev:2025,honap:12,osszeg:-7500,tipus:"Kiadás",alkategoria:"Törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:12,osszeg:-74000,tipus:"Kiadás",alkategoria:"Krotália",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:12,osszeg:-42000,tipus:"Kiadás",alkategoria:"Törzskönyv",kategoria:"MJKSZ",megj:""},
+  {ev:2025,honap:12,osszeg:130000,tipus:"Bevétel",alkategoria:"Tenyészkos",kategoria:"Egyéb bevétel",megj:""},
+];
+
+// Állomány változás data
+const ALLOMANY_DATA = [
+  {ev:2015,honap:3,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:10,osszesedaz:10},
+  {ev:2015,honap:5,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:3,osszesedaz:13},
+  {ev:2015,honap:5,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:14},
+  {ev:2015,honap:7,besorolas:"Anya",esemeny:"Vásárlás",valtozas:7,osszesedaz:21},
+  {ev:2016,honap:2,besorolas:"Bárány",esemeny:"Saját szaporulat",valtozas:6,osszesedaz:27},
+  {ev:2016,honap:2,besorolas:"Anya",esemeny:"Korosítás",valtozas:13,osszesedaz:40},
+  {ev:2016,honap:2,besorolas:"Jerke",esemeny:"Korosítás",valtozas:-13,osszesedaz:27},
+  {ev:2016,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:10,osszesedaz:37},
+  {ev:2016,honap:6,besorolas:"Bárány",esemeny:"Ellés",valtozas:6,osszesedaz:43},
+  {ev:2016,honap:7,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:42},
+  {ev:2016,honap:7,besorolas:"Anya",esemeny:"???",valtozas:-10,osszesedaz:32},
+  {ev:2016,honap:12,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-6,osszesedaz:26},
+  {ev:2016,honap:12,besorolas:"Bárány",esemeny:"Minősítés",valtozas:-1,osszesedaz:25},
+  {ev:2016,honap:12,besorolas:"Kos",esemeny:"Minősítés",valtozas:1,osszesedaz:26},
+  {ev:2017,honap:1,besorolas:"Bárány",esemeny:"Korosítás",valtozas:-7,osszesedaz:19},
+  {ev:2017,honap:1,besorolas:"Jerke",esemeny:"Korosítás",valtozas:7,osszesedaz:26},
+  {ev:2017,honap:1,besorolas:"Bárány",esemeny:"???",valtozas:-8,osszesedaz:18},
+  {ev:2017,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:6,osszesedaz:24},
+  {ev:2017,honap:5,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:23},
+  {ev:2017,honap:5,besorolas:"Jerke",esemeny:"Korosítás",valtozas:-7,osszesedaz:16},
+  {ev:2017,honap:5,besorolas:"Anya",esemeny:"Korosítás",valtozas:7,osszesedaz:23},
+  {ev:2017,honap:6,besorolas:"Anya",esemeny:"Talált",valtozas:1,osszesedaz:24},
+  {ev:2017,honap:10,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:25},
+  {ev:2017,honap:10,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:24},
+  {ev:2017,honap:10,besorolas:"Kos",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:23},
+  {ev:2017,honap:10,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-2,osszesedaz:21},
+  {ev:2017,honap:10,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:20},
+  {ev:2017,honap:10,besorolas:"Bárány",esemeny:"Minősítés",valtozas:-1,osszesedaz:19},
+  {ev:2017,honap:10,besorolas:"Egyéb",esemeny:"Minősítés",valtozas:1,osszesedaz:20},
+  {ev:2018,honap:2,besorolas:"Bárány",esemeny:"Ellés",valtozas:19,osszesedaz:39},
+  {ev:2018,honap:2,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-2,osszesedaz:37},
+  {ev:2018,honap:3,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-1,osszesedaz:36},
+  {ev:2018,honap:3,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-1,osszesedaz:35},
+  {ev:2018,honap:3,besorolas:"Bárány",esemeny:"Minősítés",valtozas:-1,osszesedaz:34},
+  {ev:2018,honap:3,besorolas:"Jerke",esemeny:"Minősítés",valtozas:1,osszesedaz:35},
+  {ev:2018,honap:6,besorolas:"Jerke",esemeny:"Minősítés",valtozas:-1,osszesedaz:34},
+  {ev:2018,honap:6,besorolas:"Anya",esemeny:"Minősítés",valtozas:1,osszesedaz:35},
+  {ev:2018,honap:7,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:34},
+  {ev:2018,honap:8,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-8,osszesedaz:26},
+  {ev:2018,honap:8,besorolas:"Bárány",esemeny:"Minősítés",valtozas:-7,osszesedaz:19},
+  {ev:2018,honap:8,besorolas:"Jerke",esemeny:"Minősítés",valtozas:7,osszesedaz:26},
+  {ev:2018,honap:11,besorolas:"Bárány",esemeny:"Ellés",valtozas:4,osszesedaz:30},
+  {ev:2018,honap:12,besorolas:"Anya",esemeny:"Elhullás",valtozas:-1,osszesedaz:29},
+  {ev:2019,honap:1,besorolas:"Anya",esemeny:"Értékesítés",valtozas:-5,osszesedaz:24},
+  {ev:2019,honap:1,besorolas:"Jerke",esemeny:"Értékesítés",valtozas:-1,osszesedaz:23},
+  {ev:2019,honap:3,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-4,osszesedaz:19},
+  {ev:2019,honap:3,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:20},
+  {ev:2019,honap:5,besorolas:"Bárány",esemeny:"Ellés",valtozas:3,osszesedaz:23},
+  {ev:2019,honap:6,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-1,osszesedaz:22},
+  {ev:2019,honap:7,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:21},
+  {ev:2019,honap:9,besorolas:"Jerke",esemeny:"Minősítés",valtozas:-6,osszesedaz:15},
+  {ev:2019,honap:9,besorolas:"Anya",esemeny:"Minősítés",valtozas:6,osszesedaz:21},
+  {ev:2019,honap:9,besorolas:"Bárány",esemeny:"Ellés",valtozas:2,osszesedaz:23},
+  {ev:2019,honap:11,besorolas:"Anya",esemeny:"Elhullás",valtozas:-3,osszesedaz:20},
+  {ev:2020,honap:1,besorolas:"Bárány",esemeny:"Minősítés",valtozas:-1,osszesedaz:19},
+  {ev:2020,honap:1,besorolas:"Anya",esemeny:"Minősítés",valtozas:1,osszesedaz:20},
+  {ev:2020,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:8,osszesedaz:28},
+  {ev:2020,honap:4,besorolas:"Bárány",esemeny:"Vásárlás",valtozas:5,osszesedaz:33},
+  {ev:2020,honap:7,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-1,osszesedaz:32},
+  {ev:2020,honap:7,besorolas:"Jerke",esemeny:"Minősítés",valtozas:7,osszesedaz:39},
+  {ev:2020,honap:7,besorolas:"Kos",esemeny:"Minősítés",valtozas:4,osszesedaz:43},
+  {ev:2020,honap:8,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-6,osszesedaz:37},
+  {ev:2020,honap:8,besorolas:"Kos",esemeny:"Vásárlás",valtozas:3,osszesedaz:40},
+  {ev:2021,honap:1,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:2,osszesedaz:42},
+  {ev:2021,honap:1,besorolas:"Jerke",esemeny:"Minősítés",valtozas:-5,osszesedaz:37},
+  {ev:2021,honap:1,besorolas:"Anya",esemeny:"Minősítés",valtozas:5,osszesedaz:42},
+  {ev:2021,honap:1,besorolas:"Kos",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:41},
+  {ev:2021,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:19,osszesedaz:60},
+  {ev:2021,honap:4,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-4,osszesedaz:56},
+  {ev:2021,honap:4,besorolas:"Bárány",esemeny:"Ellés",valtozas:3,osszesedaz:59},
+  {ev:2021,honap:6,besorolas:"Bárány",esemeny:"Ellés",valtozas:5,osszesedaz:64},
+  {ev:2021,honap:6,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-2,osszesedaz:62},
+  {ev:2021,honap:7,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-3,osszesedaz:59},
+  {ev:2021,honap:9,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-9,osszesedaz:50},
+  {ev:2021,honap:9,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:51},
+  {ev:2021,honap:9,besorolas:"Bárány",esemeny:"Ellés",valtozas:5,osszesedaz:56},
+  {ev:2021,honap:12,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-1,osszesedaz:55},
+  {ev:2021,honap:12,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-3,osszesedaz:52},
+  {ev:2022,honap:2,besorolas:"Bárány",esemeny:"Minősítés",valtozas:-10,osszesedaz:42},
+  {ev:2022,honap:2,besorolas:"Jerke",esemeny:"Minősítés",valtozas:10,osszesedaz:52},
+  {ev:2022,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:23,osszesedaz:75},
+  {ev:2022,honap:4,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:76},
+  {ev:2022,honap:4,besorolas:"Bárány",esemeny:"Ellés",valtozas:30,osszesedaz:106},
+  {ev:2022,honap:6,besorolas:"Bárány",esemeny:"Ellés",valtozas:2,osszesedaz:108},
+  {ev:2022,honap:7,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-30,osszesedaz:78},
+  {ev:2022,honap:7,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:10,osszesedaz:88},
+  {ev:2022,honap:7,besorolas:"Anya",esemeny:"Vásárlás",valtozas:18,osszesedaz:106},
+  {ev:2022,honap:8,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:107},
+  {ev:2022,honap:8,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-5,osszesedaz:102},
+  {ev:2022,honap:8,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-1,osszesedaz:101},
+  {ev:2022,honap:10,besorolas:"Anya",esemeny:"Értékesítés",valtozas:-12,osszesedaz:89},
+  {ev:2022,honap:10,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-2,osszesedaz:87},
+  {ev:2022,honap:10,besorolas:"Bárány",esemeny:"Ellés",valtozas:2,osszesedaz:89},
+  {ev:2022,honap:12,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-2,osszesedaz:87},
+  {ev:2022,honap:12,besorolas:"Kos",esemeny:"Minősítés",valtozas:4,osszesedaz:91},
+  {ev:2023,honap:1,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:92},
+  {ev:2023,honap:1,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-2,osszesedaz:90},
+  {ev:2023,honap:3,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-4,osszesedaz:86},
+  {ev:2023,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:19,osszesedaz:105},
+  {ev:2023,honap:4,besorolas:"Bárány",esemeny:"Ellés",valtozas:12,osszesedaz:117},
+  {ev:2023,honap:4,besorolas:"Anya",esemeny:"Vásárlás",valtozas:3,osszesedaz:120},
+  {ev:2023,honap:5,besorolas:"Anya",esemeny:"Kényszer vágás",valtozas:-3,osszesedaz:117},
+  {ev:2023,honap:7,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-18,osszesedaz:99},
+  {ev:2023,honap:7,besorolas:"Jerke",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:98},
+  {ev:2023,honap:8,besorolas:"Bárány",esemeny:"Ellés",valtozas:2,osszesedaz:100},
+  {ev:2023,honap:9,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-8,osszesedaz:92},
+  {ev:2023,honap:9,besorolas:"Anya",esemeny:"Értékesítés",valtozas:-2,osszesedaz:90},
+  {ev:2023,honap:9,besorolas:"Jerke",esemeny:"Értékesítés",valtozas:-5,osszesedaz:85},
+  {ev:2023,honap:9,besorolas:"Anya",esemeny:"Elhullás",valtozas:-2,osszesedaz:83},
+  {ev:2023,honap:10,besorolas:"Anya",esemeny:"Értékesítés",valtozas:-5,osszesedaz:78},
+  {ev:2023,honap:11,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:79},
+  {ev:2023,honap:12,besorolas:"Bárány",esemeny:"Ellés",valtozas:1,osszesedaz:80},
+  {ev:2024,honap:2,besorolas:"Jerke",esemeny:"Minősítés",valtozas:-18,osszesedaz:62},
+  {ev:2024,honap:2,besorolas:"Anya",esemeny:"Minősítés",valtozas:20,osszesedaz:82},
+  {ev:2024,honap:2,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-1,osszesedaz:81},
+  {ev:2024,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:61,osszesedaz:142},
+  {ev:2024,honap:3,besorolas:"Anya",esemeny:"Vásárlás",valtozas:4,osszesedaz:146},
+  {ev:2024,honap:4,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-1,osszesedaz:145},
+  {ev:2024,honap:6,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-2,osszesedaz:143},
+  {ev:2024,honap:6,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:2,osszesedaz:145},
+  {ev:2024,honap:7,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-14,osszesedaz:131},
+  {ev:2024,honap:8,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-5,osszesedaz:126},
+  {ev:2024,honap:8,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-2,osszesedaz:124},
+  {ev:2024,honap:9,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-12,osszesedaz:112},
+  {ev:2024,honap:9,besorolas:"Bárány",esemeny:"Ellés",valtozas:2,osszesedaz:114},
+  {ev:2024,honap:11,besorolas:"Anya",esemeny:"Vásárlás",valtozas:3,osszesedaz:117},
+  {ev:2024,honap:11,besorolas:"Bárány",esemeny:"Ellés",valtozas:2,osszesedaz:119},
+  {ev:2024,honap:11,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-4,osszesedaz:115},
+  {ev:2024,honap:12,besorolas:"Jerke",esemeny:"Minősítés",valtozas:14,osszesedaz:129},
+  {ev:2024,honap:12,besorolas:"Kos",esemeny:"Minősítés",valtozas:8,osszesedaz:137},
+  {ev:2024,honap:12,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-1,osszesedaz:136},
+  {ev:2025,honap:1,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-9,osszesedaz:127},
+  {ev:2025,honap:2,besorolas:"Anya",esemeny:"Értékesítés",valtozas:-2,osszesedaz:125},
+  {ev:2025,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:44,osszesedaz:169},
+  {ev:2025,honap:4,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:170},
+  {ev:2025,honap:4,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-1,osszesedaz:169},
+  {ev:2025,honap:5,besorolas:"Anya",esemeny:"Elveszés",valtozas:-2,osszesedaz:167},
+  {ev:2025,honap:5,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-3,osszesedaz:164},
+  {ev:2025,honap:5,besorolas:"Bárány",esemeny:"Elhullás",valtozas:-2,osszesedaz:162},
+  {ev:2025,honap:8,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-4,osszesedaz:158},
+  {ev:2025,honap:8,besorolas:"Bárány",esemeny:"Ellés",valtozas:9,osszesedaz:167},
+  {ev:2025,honap:8,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-2,osszesedaz:165},
+  {ev:2025,honap:9,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-16,osszesedaz:149},
+  {ev:2025,honap:9,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:2,osszesedaz:151},
+  {ev:2025,honap:9,besorolas:"Bárány",esemeny:"Kényszer vágás",valtozas:-3,osszesedaz:148},
+  {ev:2025,honap:9,besorolas:"Jerke",esemeny:"Minősítés",valtozas:-11,osszesedaz:137},
+  {ev:2025,honap:9,besorolas:"Anya",esemeny:"Minősítés",valtozas:16,osszesedaz:153},
+  {ev:2025,honap:10,besorolas:"Bárány",esemeny:"Ellés",valtozas:7,osszesedaz:160},
+  {ev:2025,honap:10,besorolas:"Kos",esemeny:"Vásárlás",valtozas:1,osszesedaz:161},
+  {ev:2025,honap:10,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-1,osszesedaz:160},
+  {ev:2025,honap:12,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-5,osszesedaz:155},
+  {ev:2026,honap:1,besorolas:"Bárány",esemeny:"Ellés",valtozas:21,osszesedaz:176},
+  {ev:2026,honap:1,besorolas:"Jerke",esemeny:"Vásárlás",valtozas:1,osszesedaz:177},
+  {ev:2026,honap:1,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-4,osszesedaz:173},
+  {ev:2026,honap:1,besorolas:"Kos",esemeny:"Minősítés",valtozas:6,osszesedaz:179},
+  {ev:2026,honap:3,besorolas:"Kos",esemeny:"Értékesítés",valtozas:-6,osszesedaz:173},
+  {ev:2026,honap:3,besorolas:"Bárány",esemeny:"Ellés",valtozas:15,osszesedaz:188},
+  {ev:2026,honap:3,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-17,osszesedaz:171},
+  {ev:2026,honap:3,besorolas:"Anya",esemeny:"Vásárlás",valtozas:4,osszesedaz:175},
+  {ev:2026,honap:4,besorolas:"Bárány",esemeny:"Ellés",valtozas:48,osszesedaz:223},
+  {ev:2026,honap:5,besorolas:"Bárány",esemeny:"Értékesítés",valtozas:-15,osszesedaz:208},
+];
+
+// Pénzügyi összesítő (statikus)
+const OSSZESITO = [
+  {ev:2016,bev:109500,kiad:93000},
+  {ev:2017,bev:500000,kiad:423800},
+  {ev:2018,bev:622000,kiad:251400},
+  {ev:2019,bev:833500,kiad:373560},
+  {ev:2020,bev:856000,kiad:962170},
+  {ev:2021,bev:1452500,kiad:1038000},
+  {ev:2022,bev:1505000,kiad:1337000},
+  {ev:2023,bev:6558000,kiad:5363880},
+  {ev:2024,bev:7068000,kiad:5127200},
+  {ev:2025,bev:8053500,kiad:7136000},
+  {ev:2026,bev:4800500,kiad:2588500},
+];
+
+// ===== DATA STORAGE =====
+function loadData() { return JSON.parse(localStorage.getItem('krisData') || 'null') || PENZ_DATA_STATIC; }
+function saveData(d) { localStorage.setItem('krisData', JSON.stringify(d)); }
+function loadEurRate() { return parseFloat(localStorage.getItem('eurRate') || '365'); }
+function saveEurRate() {
+    const v = parseFloat(document.getElementById('eurRate').value);
+    if (v > 0) { localStorage.setItem('eurRate', v); document.getElementById('eurRateNote').textContent = 'Mentve ✓'; setTimeout(() => document.getElementById('eurRateNote').textContent='', 2000); refresh(); }
+}
+
+// ===== INIT =====
+function init() {
+    document.getElementById('eurRate').value = loadEurRate();
+    updateKategoria();
+    const now = new Date();
+    document.getElementById('fHonap').value = now.getMonth()+1;
+    document.getElementById('fEv').value = now.getFullYear();
+    buildYearFilter();
+    refresh();
+    buildAllomanyYearFilter();
+}
+
+const MONTHS = ['','Jan','Feb','Már','Ápr','Máj','Jún','Júl','Aug','Sze','Okt','Nov','Dec'];
+
+function buildYearFilter() {
+    const data = loadData();
+    const years = [...new Set(data.map(d=>d.ev))].sort((a,b)=>b-a);
+    const sel = document.getElementById('yearFilter');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="all">Összes év</option>';
+    years.forEach(y => sel.innerHTML += `<option value="${y}" ${String(y)===cur?'selected':''}>${y}</option>`);
+}
+function buildAllomanyYearFilter() {
+    const years = [...new Set(ALLOMANY_DATA.map(d=>d.ev))].sort((a,b)=>b-a);
+    const sel = document.getElementById('allomanyYearFilter');
+    sel.innerHTML = '<option value="all">Összes</option>';
+    years.forEach(y => sel.innerHTML += `<option value="${y}">${y}</option>`);
+}
+
+function filteredData() {
+    const data = loadData();
+    const year = document.getElementById('yearFilter').value;
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    return data.filter(d => {
+        if (year !== 'all' && String(d.ev) !== year) return false;
+        if (search && ![d.alkategoria,d.kategoria,d.megj,d.tipus,String(d.ev),String(d.osszeg)].some(v=>v&&v.toLowerCase().includes(search))) return false;
+        return true;
+    });
+}
+
+let chartMonthly=null, chartCategory=null, chartAllomany=null, chartOsszetetel=null, chartEves=null, chartHaszon=null;
+
+function refresh() {
+    const data = filteredData();
+    const eur = loadEurRate();
+    let income=0, expense=0;
+    data.forEach(d => { if(d.osszeg>0) income+=d.osszeg; else expense+=Math.abs(d.osszeg); });
+
+    const fmt = n => n.toLocaleString('hu-HU')+' Ft';
+    const fmtEur = n => '≈ €'+Math.round(n/eur).toLocaleString('hu-HU');
+    document.getElementById('kpiIncome').textContent = fmt(income);
+    document.getElementById('kpiExpense').textContent = fmt(expense);
+    document.getElementById('kpiBalance').textContent = fmt(income-expense);
+    document.getElementById('kpiIncomeEur').textContent = fmtEur(income);
+    document.getElementById('kpiExpenseEur').textContent = fmtEur(expense);
+    document.getElementById('kpiBalanceEur').textContent = fmtEur(income-expense);
+
+    const monthMap = {};
+    data.forEach(d => {
+        const key = `${d.ev}-${String(d.honap).padStart(2,'0')}`;
+        if (!monthMap[key]) monthMap[key]={inc:0,exp:0};
+        if (d.osszeg>0) monthMap[key].inc+=d.osszeg; else monthMap[key].exp+=Math.abs(d.osszeg);
+    });
+    const mKeys = Object.keys(monthMap).sort();
+    const mLabels = mKeys.map(k => { const [y,m]=k.split('-'); return MONTHS[parseInt(m)]+' '+y; });
+    if (chartMonthly) chartMonthly.destroy();
+    chartMonthly = new Chart(document.getElementById('chartMonthly'), {
+        type:'bar', data:{ labels:mLabels, datasets:[
+            {label:'Bevétel',data:mKeys.map(k=>monthMap[k].inc/1000),backgroundColor:'#2e7d5e88',borderColor:'#2e7d5e',borderWidth:2},
+            {label:'Kiadás',data:mKeys.map(k=>monthMap[k].exp/1000),backgroundColor:'#c0392b88',borderColor:'#c0392b',borderWidth:2}
+        ]},
+        options:{plugins:{legend:{labels:{font:{family:'Montserrat',size:11}}}},scales:{y:{ticks:{callback:v=>v+'k Ft'}}},responsive:true,maintainAspectRatio:true}
+    });
+
+    const catMap = {};
+    data.filter(d=>d.osszeg<0).forEach(d => catMap[d.kategoria]=(catMap[d.kategoria]||0)+Math.abs(d.osszeg));
+    const cColors=['#8b6f47','#c0392b','#2e7d5e','#2c3e50','#e67e22','#8e44ad','#16a085','#d35400','#27ae60'];
+    if (chartCategory) chartCategory.destroy();
+    chartCategory = new Chart(document.getElementById('chartCategory'), {
+        type:'doughnut', data:{labels:Object.keys(catMap),datasets:[{data:Object.values(catMap).map(v=>Math.round(v/1000)),backgroundColor:cColors}]},
+        options:{plugins:{legend:{position:'bottom',labels:{font:{family:'Montserrat',size:11},padding:12}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.raw+'k Ft'}}},responsive:true,maintainAspectRatio:true}
+    });
+
+    const allData = loadData();
+    const tbody = document.getElementById('tableBody');
+    const sorted = [...data].sort((a,b)=>b.ev!==a.ev?b.ev-a.ev:b.honap-a.honap);
+    tbody.innerHTML = sorted.map(d => {
+        const idx = allData.findIndex(x=>x.ev===d.ev&&x.honap===d.honap&&x.osszeg===d.osszeg&&x.kategoria===d.kategoria&&x.alkategoria===d.alkategoria&&x.megj===d.megj);
+        const isInc = d.osszeg>0;
+        return `<tr>
+            <td>${d.ev}</td><td>${MONTHS[d.honap]}</td>
+            <td class="${isInc?'amount-income':'amount-expense'}">${isInc?'+':''}${d.osszeg.toLocaleString('hu-HU')} Ft</td>
+            <td><span class="badge ${isInc?'badge-income':'badge-expense'}">${d.tipus}</span></td>
+            <td>${d.kategoria}</td><td>${d.alkategoria}</td>
+            <td style="color:#aaa;font-size:12px;">${d.megj||''}</td>
+            <td><button class="btn-delete" onclick="deleteEntry(${idx})" title="Törlés"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    }).join('');
+    document.getElementById('tableEmpty').style.display = sorted.length?'none':'block';
+    buildYearFilter();
+}
+
+function addEntry() {
+    const ev=parseInt(document.getElementById('fEv').value);
+    const honap=parseInt(document.getElementById('fHonap').value);
+    let osszeg=parseFloat(document.getElementById('fOsszeg').value);
+    const tipus=document.getElementById('fTipus').value;
+    const kategoria=document.getElementById('fKategoria').value;
+    const alkategoria=document.getElementById('fAlkategoria').value;
+    const megj=document.getElementById('fMegjegyzes').value.trim();
+    if (!ev||!honap||isNaN(osszeg)||osszeg===0) { showToast('⚠️ Kérlek töltsd ki az összes kötelező mezőt!'); return; }
+    if (tipus==='Kiadás'&&osszeg>0) osszeg=-osszeg;
+    if (tipus==='Bevétel'&&osszeg<0) osszeg=Math.abs(osszeg);
+    const data=loadData(); data.push({ev,honap,osszeg,tipus,alkategoria,kategoria,megj}); saveData(data);
+    document.getElementById('fOsszeg').value=''; document.getElementById('fMegjegyzes').value='';
+    refresh(); showToast('✅ Tétel sikeresen hozzáadva!');
+}
+
+function deleteEntry(idx) {
+    if (!confirm('Biztosan törlöd ezt a tételt?')) return;
+    const data=loadData(); data.splice(idx,1); saveData(data); refresh(); showToast('🗑️ Tétel törölve.');
+}
+
+function exportCSV() {
+    const data=filteredData();
+    const rows=[['Év','Hónap','Összeg','Típus','Kategória','Alkategória','Megjegyzés']];
+    data.forEach(d=>rows.push([d.ev,d.honap,d.osszeg,d.tipus,d.kategoria,d.alkategoria,d.megj||'']));
+    const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='krisdorper_export.csv'; a.click();
+    showToast('📥 CSV letöltve!');
+}
+
+// ===== ÁLLOMÁNY =====
+function refreshAllomany() {
+    const year = document.getElementById('allomanyYearFilter').value;
+    const data = year==='all' ? ALLOMANY_DATA : ALLOMANY_DATA.filter(d=>String(d.ev)===year);
+
+    // Jelenlegi állomány (legutolsó rekordból)
+    const current = {Jerke:10,Kos:3,Anya:64,Bárány:59,Egyéb:0};
+    const kpiEl = document.getElementById('allomanyKpis');
+    const total = Object.values(current).reduce((a,b)=>a+b,0);
+    kpiEl.innerHTML = Object.entries(current).map(([k,v])=>`
+        <div class="allomany-kpi"><div class="val">${v}</div><div class="lbl">${k}</div></div>
+    `).join('') + `<div class="allomany-kpi"><div class="val" style="color:var(--dark)">${total}</div><div class="lbl">Összesen</div></div>`;
+
+    // Chart: állomány idősorban
+    const points = ALLOMANY_DATA.map(d=>({x:d.ev+d.honap/12,y:d.osszesedaz,label:`${d.ev}-${String(d.honap).padStart(2,'0')}`}));
+    const unique = {}; points.forEach(p=>unique[p.label]=p.y);
+    const sortedKeys = Object.keys(unique).sort();
+    if (chartAllomany) chartAllomany.destroy();
+    chartAllomany = new Chart(document.getElementById('chartAllomany'), {
+        type:'line', data:{labels:sortedKeys,datasets:[{label:'Összes egyed',data:sortedKeys.map(k=>unique[k]),borderColor:'#8b6f47',backgroundColor:'rgba(139,111,71,0.1)',fill:true,tension:0.3,pointRadius:2}]},
+        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}},responsive:true,maintainAspectRatio:true}
+    });
+
+    // Chart: jelenlegi összetétel
+    if (chartOsszetetel) chartOsszetetel.destroy();
+    chartOsszetetel = new Chart(document.getElementById('chartOsszetetel'), {
+        type:'doughnut',
+        data:{labels:Object.keys(current),datasets:[{data:Object.values(current),backgroundColor:['#e94e77','#4a90e2','#8b6f47','#2e7d5e','#aaa']}]},
+        options:{plugins:{legend:{position:'bottom',labels:{font:{family:'Montserrat',size:12},padding:15}}},responsive:true,maintainAspectRatio:true}
+    });
+
+    // Table
+    const tbody = document.getElementById('allomanyTableBody');
+    const filtered = [...data].sort((a,b)=>b.ev!==a.ev?b.ev-a.ev:b.honap-a.honap);
+    const evtColors = {Ellés:'#e8f5ef',Vásárlás:'#e8f0f5',Értékesítés:'#fdecea','Kényszer vágás':'#fef9e7',Elhullás:'#fdecea',Minősítés:'#f5f0ff',Korosítás:'#f5f0ff'};
+    tbody.innerHTML = filtered.map(d=>`<tr>
+        <td>${d.ev}</td><td>${MONTHS[d.honap]}</td><td>${d.besorolas}</td>
+        <td><span style="background:${evtColors[d.esemeny]||'#f0f0f0'};padding:3px 8px;border-radius:12px;font-size:11px;">${d.esemeny}</span></td>
+        <td class="${d.valtozas>0?'amount-income':'amount-expense'}">${d.valtozas>0?'+':''}${d.valtozas}</td>
+        <td><strong>${d.osszesedaz}</strong></td>
+    </tr>`).join('');
+}
+
+// ===== ÖSSZESÍTŐ =====
+function refreshOsszesito() {
+    const labels = OSSZESITO.map(d=>d.ev);
+    if (chartEves) chartEves.destroy();
+    chartEves = new Chart(document.getElementById('chartEves'), {
+        type:'bar', data:{labels,datasets:[
+            {label:'Bevétel',data:OSSZESITO.map(d=>d.bev/1000),backgroundColor:'#2e7d5e88',borderColor:'#2e7d5e',borderWidth:2},
+            {label:'Kiadás',data:OSSZESITO.map(d=>d.kiad/1000),backgroundColor:'#c0392b88',borderColor:'#c0392b',borderWidth:2}
+        ]},
+        options:{plugins:{legend:{labels:{font:{family:'Montserrat',size:11}}}},scales:{y:{ticks:{callback:v=>v+'k'}}},responsive:true,maintainAspectRatio:true}
+    });
+    if (chartHaszon) chartHaszon.destroy();
+    chartHaszon = new Chart(document.getElementById('chartHaszon'), {
+        type:'line', data:{labels,datasets:[{label:'Haszon',data:OSSZESITO.map(d=>(d.bev-d.kiad)/1000),borderColor:'#8b6f47',backgroundColor:'rgba(139,111,71,0.15)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#8b6f47'}]},
+        options:{plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'k Ft'}}},responsive:true,maintainAspectRatio:true}
+    });
+
+    const tbody = document.getElementById('osszesitoTableBody');
+    tbody.innerHTML = OSSZESITO.map(d=>{
+        const haszon=d.bev-d.kiad;
+        const pct = d.kiad>0?Math.round(haszon/d.kiad*100):0;
+        return `<tr>
+            <td><strong>${d.ev}</strong></td>
+            <td class="amount-income">+${d.bev.toLocaleString('hu-HU')} Ft</td>
+            <td class="amount-expense">-${d.kiad.toLocaleString('hu-HU')} Ft</td>
+            <td class="${haszon>=0?'positive':'negative'}">${haszon>=0?'+':''}${haszon.toLocaleString('hu-HU')} Ft</td>
+            <td class="${pct>=0?'positive':'negative'}">${pct}%</td>
+        </tr>`;
+    }).join('') + `<tr style="background:#faf7f2;font-weight:700;">
+        <td>ÖSSZESEN</td>
+        <td class="amount-income">+${OSSZESITO.reduce((a,d)=>a+d.bev,0).toLocaleString('hu-HU')} Ft</td>
+        <td class="amount-expense">-${OSSZESITO.reduce((a,d)=>a+d.kiad,0).toLocaleString('hu-HU')} Ft</td>
+        <td class="positive">+${OSSZESITO.reduce((a,d)=>a+(d.bev-d.kiad),0).toLocaleString('hu-HU')} Ft</td>
+        <td></td>
+    </tr>`;
+}
+
+function showToast(msg) {
+    const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
