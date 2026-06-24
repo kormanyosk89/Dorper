@@ -1143,8 +1143,16 @@ const OSSZESITO = [
 ];
 
 // ===== DATA STORAGE =====
-function loadData() { return JSON.parse(localStorage.getItem('krisData') || 'null') || PENZ_DATA_STATIC; }
-function saveData(d) { localStorage.setItem('krisData', JSON.stringify(d)); }
+function loadData() {
+    // Always use full static data as base, plus any user-added entries
+    const userAdded = JSON.parse(localStorage.getItem('krisUserAdded') || '[]');
+    return [...PENZ_DATA_STATIC, ...userAdded];
+}
+function saveData(d) {
+    // Only save entries that are NOT in the static data (user-added ones)
+    localStorage.setItem('krisUserAdded', JSON.stringify(d));
+}
+function loadUserAdded() { return JSON.parse(localStorage.getItem('krisUserAdded') || '[]'); }
 function loadEurRate() { return parseFloat(localStorage.getItem('eurRate') || '365'); }
 function saveEurRate() {
     const v = parseFloat(document.getElementById('eurRate').value);
@@ -1153,6 +1161,8 @@ function saveEurRate() {
 
 // ===== INIT =====
 function init() {
+    // Clear old localStorage format if present
+    localStorage.removeItem('krisData');
     document.getElementById('eurRate').value = loadEurRate();
     updateKategoria();
     const now = new Date();
@@ -1246,7 +1256,7 @@ function refresh() {
             <td><span class="badge ${isInc?'badge-income':'badge-expense'}">${d.tipus}</span></td>
             <td>${d.kategoria}</td><td>${d.alkategoria}</td>
             <td style="color:#aaa;font-size:12px;">${d.megj||''}</td>
-            <td><button class="btn-delete" onclick="deleteEntry(${idx})" title="Törlés"><i class="fas fa-trash"></i></button></td>
+            <td>${idx < PENZ_DATA_STATIC.length ? '<span title="Excel adat – nem törölhető" style="color:#ddd;padding:5px;font-size:13px;"><i class=\"fas fa-lock\"></i></span>' : '<button class=\"btn-delete\" onclick=\"deleteEntry('+idx+')\" title=\"Törlés\"><i class=\"fas fa-trash\"></i></button>'}</td>
         </tr>`;
     }).join('');
     document.getElementById('tableEmpty').style.display = sorted.length?'none':'block';
@@ -1264,14 +1274,20 @@ function addEntry() {
     if (!ev||!honap||isNaN(osszeg)||osszeg===0) { showToast('⚠️ Kérlek töltsd ki az összes kötelező mezőt!'); return; }
     if (tipus==='Kiadás'&&osszeg>0) osszeg=-osszeg;
     if (tipus==='Bevétel'&&osszeg<0) osszeg=Math.abs(osszeg);
-    const data=loadData(); data.push({ev,honap,osszeg,tipus,alkategoria,kategoria,megj}); saveData(data);
+    const userAdded=loadUserAdded(); userAdded.push({ev,honap,osszeg,tipus,alkategoria,kategoria,megj}); localStorage.setItem('krisUserAdded', JSON.stringify(userAdded));
     document.getElementById('fOsszeg').value=''; document.getElementById('fMegjegyzes').value='';
     refresh(); showToast('✅ Tétel sikeresen hozzáadva!');
 }
 
 function deleteEntry(idx) {
     if (!confirm('Biztosan törlöd ezt a tételt?')) return;
-    const data=loadData(); data.splice(idx,1); saveData(data); refresh(); showToast('🗑️ Tétel törölve.');
+    const staticLen = PENZ_DATA_STATIC.length;
+    if (idx < staticLen) { showToast('⚠️ Az Excel-ből importált tételek nem törölhetők.'); return; }
+    const userAdded = loadUserAdded();
+    userAdded.splice(idx - staticLen, 1);
+    localStorage.setItem('krisUserAdded', JSON.stringify(userAdded));
+    refresh();
+    showToast('🗑️ Tétel törölve.');
 }
 
 function exportCSV() {
