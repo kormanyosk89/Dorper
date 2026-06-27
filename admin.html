@@ -633,64 +633,119 @@ function saveAvgAr() {
     const v = parseFloat(document.getElementById('avgArInput').value);
     if (v > 0) {
         localStorage.setItem('avgAr', v);
-        document.getElementById('avgArNote').textContent = 'Mentve ✓';
+        document.getElementById('avgArNote').textContent = 'Mentve \u2713';
         setTimeout(() => document.getElementById('avgArNote').textContent='', 2000);
         refreshAllomany();
     }
 }
+function loadAllomanyData() {
+    const userAdded = JSON.parse(localStorage.getItem('allomanyUserAdded') || '[]');
+    return [...ALLOMANY_DATA, ...userAdded];
+}
+function addAllomanyEntry() {
+    const ev = parseInt(document.getElementById('aEv').value);
+    const honap = parseInt(document.getElementById('aHonap').value);
+    const besorolas = document.getElementById('aBesorolas').value;
+    const esemeny = document.getElementById('aEsemeny').value;
+    const valtozas = parseInt(document.getElementById('aValtozas').value);
+    const megj = document.getElementById('aMegj').value.trim();
+    if (!ev || !honap || isNaN(valtozas) || valtozas === 0) { showToast('\u26a0\ufe0f Kérlek töltsd ki az összes mezőt!'); return; }
+    const allData = loadAllomanyData();
+    const lastTotal = allData.length > 0 ? allData[allData.length-1].osszesedaz : 0;
+    const osszesedaz = lastTotal + valtozas;
+    const userAdded = JSON.parse(localStorage.getItem('allomanyUserAdded') || '[]');
+    userAdded.push({ev, honap, besorolas, esemeny, valtozas, osszesedaz, megj});
+    localStorage.setItem('allomanyUserAdded', JSON.stringify(userAdded));
+    document.getElementById('aValtozas').value = '';
+    document.getElementById('aMegj').value = '';
+    refreshAllomany();
+    showToast('\u2705 Bejegyzés hozzáadva!');
+}
+function deleteAllomanyEntry(idx) {
+    if (!confirm('Biztosan törlöd ezt a bejegyzést?')) return;
+    const staticLen = ALLOMANY_DATA.length;
+    if (idx < staticLen) { showToast('\u26a0\ufe0f Az Excel adatok nem törölhetők.'); return; }
+    const userAdded = JSON.parse(localStorage.getItem('allomanyUserAdded') || '[]');
+    userAdded.splice(idx - staticLen, 1);
+    localStorage.setItem('allomanyUserAdded', JSON.stringify(userAdded));
+    refreshAllomany();
+    showToast('\ud83d\uddd1\ufe0f Bejegyzés törölve.');
+}
+function exportAllomanyCSV() {
+    const data = loadAllomanyData();
+    const rows = [['Ev','Honap','Besorolas','Esemeny','Valtozas','Osszesedaz','Megj']];
+    data.forEach(d => rows.push([d.ev, d.honap, d.besorolas, d.esemeny, d.valtozas, d.osszesedaz, d.megj||'']));
+    const csv = rows.map(r => r.map(v => '"'+v+'"').join(',')).join('\n');
+    const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'allomany_export.csv'; a.click();
+    showToast('\ud83d\udce5 CSV letöltve!');
+}
+function buildAllomanyYearFilter2(allData) {
+    const years = [...new Set(allData.map(d=>d.ev))].sort((a,b)=>b-a);
+    const sel = document.getElementById('allomanyYearFilter');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="all">Összes év</option>';
+    years.forEach(y => sel.innerHTML += '<option value="'+y+'" '+(String(y)===cur?'selected':'')+'>'+y+'</option>');
+}
 function refreshAllomany() {
+    const MONTHS = ['','Jan','Feb','Már','Ápr','Máj','Jún','Júl','Aug','Sze','Okt','Nov','Dec'];
+    const allData = loadAllomanyData();
     const year = document.getElementById('allomanyYearFilter').value;
-    const data = year==='all' ? ALLOMANY_DATA : ALLOMANY_DATA.filter(d=>String(d.ev)===year);
+    const filtered = year==='all' ? allData : allData.filter(d=>String(d.ev)===year);
 
-    // Jelenlegi állomány: legutolsó osszesedaz érték az ALLOMANY_DATA-ból
-    const lastRecord = ALLOMANY_DATA[ALLOMANY_DATA.length - 1];
-    const totalDb = lastRecord ? lastRecord.osszesedaz : 0;
-    // Besorolás szerinti aktuális összetétel: utolsó rekord per besorolás
-    const besorolasMap = {};
-    ALLOMANY_DATA.forEach(d => { besorolasMap[d.besorolas] = d.osszesedaz; });
-    // Kiszámítjuk az értéket
+    const besorolasDb = {Anya:0, Jerke:0, Kos:0, Bárány:0, Egyéb:0};
+    allData.forEach(d => {
+        if (besorolasDb.hasOwnProperty(d.besorolas)) besorolasDb[d.besorolas] += d.valtozas;
+        else besorolasDb['Egyéb'] += d.valtozas;
+    });
+    const totalDb = Object.values(besorolasDb).reduce((a,b)=>a+b,0);
     const avgAr = loadAvgAr();
-    const totalErtek = totalDb * avgAr;
-    const kpiEl = document.getElementById('allomanyKpis');
     document.getElementById('avgArInput').value = avgAr;
-    const besorolasok = ['Anya','Jerke','Kos','Bárány','Egyéb'];
-    kpiEl.innerHTML = besorolasok.map(k => `
-        <div class="allomany-kpi"><div class="val">${besorolasMap[k]||0}</div><div class="lbl">${k}</div></div>
-    `).join('') +
-    `<div class="allomany-kpi"><div class="val" style="color:var(--dark)">${totalDb}</div><div class="lbl">Összesen</div></div>` +
-    `<div class="allomany-kpi" style="border-left:4px solid var(--brown);"><div class="val" style="color:var(--brown);font-size:20px;">${Math.round(totalErtek/1000).toLocaleString('hu-HU')}k</div><div class="lbl">Becsült érték (Ft)</div></div>`;
 
-    // Chart: állomány idősorban
-    const points = ALLOMANY_DATA.map(d=>({x:d.ev+d.honap/12,y:d.osszesedaz,label:`${d.ev}-${String(d.honap).padStart(2,'0')}`}));
-    const unique = {}; points.forEach(p=>unique[p.label]=p.y);
-    const sortedKeys = Object.keys(unique).sort();
+    document.getElementById('allomanyKpis').innerHTML =
+        Object.entries(besorolasDb).map(([k,v]) =>
+            '<div class="allomany-kpi"><div class="val">'+Math.max(0,v)+'</div><div class="lbl">'+k+'</div></div>'
+        ).join('') +
+        '<div class="allomany-kpi"><div class="val" style="color:var(--dark)">'+Math.max(0,totalDb)+'</div><div class="lbl">Összesen</div></div>' +
+        '<div class="allomany-kpi" style="border-left:4px solid var(--brown);"><div class="val" style="color:var(--brown);font-size:18px;">'+Math.round(totalDb*avgAr/1000).toLocaleString('hu-HU')+'k Ft</div><div class="lbl">Becsült érték</div></div>';
+
+    buildAllomanyYearFilter2(allData);
+
+    const timeMap = {};
+    allData.forEach(d => { const k=d.ev+'-'+String(d.honap).padStart(2,'0'); timeMap[k]=d.osszesedaz; });
+    const sk = Object.keys(timeMap).sort();
     if (chartAllomany) chartAllomany.destroy();
     chartAllomany = new Chart(document.getElementById('chartAllomany'), {
-        type:'line', data:{labels:sortedKeys,datasets:[{label:'Összes egyed',data:sortedKeys.map(k=>unique[k]),borderColor:'#8b6f47',backgroundColor:'rgba(139,111,71,0.1)',fill:true,tension:0.3,pointRadius:2}]},
-        options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}},responsive:true,maintainAspectRatio:true}
+        type:'line', data:{labels:sk, datasets:[{label:'Összes egyed', data:sk.map(k=>timeMap[k]),
+        borderColor:'#8b6f47', backgroundColor:'rgba(139,111,71,0.1)', fill:true, tension:0.3, pointRadius:2}]},
+        options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:false}}, responsive:true, maintainAspectRatio:true}
     });
-
-    // Chart: jelenlegi összetétel
     if (chartOsszetetel) chartOsszetetel.destroy();
     chartOsszetetel = new Chart(document.getElementById('chartOsszetetel'), {
         type:'doughnut',
-        data:{labels:Object.keys(current),datasets:[{data:Object.values(current),backgroundColor:['#e94e77','#4a90e2','#8b6f47','#2e7d5e','#aaa']}]},
-        options:{plugins:{legend:{position:'bottom',labels:{font:{family:'Montserrat',size:12},padding:15}}},responsive:true,maintainAspectRatio:true}
+        data:{labels:Object.keys(besorolasDb), datasets:[{data:Object.values(besorolasDb).map(v=>Math.max(0,v)),
+        backgroundColor:['#e94e77','#4a90e2','#8b6f47','#2e7d5e','#aaa']}]},
+        options:{plugins:{legend:{position:'bottom', labels:{font:{family:'Montserrat',size:12},padding:12}}}, responsive:true, maintainAspectRatio:true}
     });
 
-    // Table
-    const tbody = document.getElementById('allomanyTableBody');
-    const filtered = [...data].sort((a,b)=>b.ev!==a.ev?b.ev-a.ev:b.honap-a.honap);
-    const evtColors = {Ellés:'#e8f5ef',Vásárlás:'#e8f0f5',Értékesítés:'#fdecea','Kényszer vágás':'#fef9e7',Elhullás:'#fdecea',Minősítés:'#f5f0ff',Korosítás:'#f5f0ff'};
-    tbody.innerHTML = filtered.map(d=>`<tr>
-        <td>${d.ev}</td><td>${MONTHS[d.honap]}</td><td>${d.besorolas}</td>
-        <td><span style="background:${evtColors[d.esemeny]||'#f0f0f0'};padding:3px 8px;border-radius:12px;font-size:11px;">${d.esemeny}</span></td>
-        <td class="${d.valtozas>0?'amount-income':'amount-expense'}">${d.valtozas>0?'+':''}${d.valtozas}</td>
-        <td><strong>${d.osszesedaz}</strong></td>
-    </tr>`).join('');
+    const evtColors = {'Ellés':'#e8f5ef','Vásárlás':'#e8f0f5','Értékesítés':'#fdecea','Kényszer vágás':'#fef9e7','Elhullás':'#fdecea','Minősítés':'#f5f0ff','Korosítás':'#f5f0ff','Elveszés':'#fff3e0'};
+    const sorted = [...filtered].sort((a,b)=>b.ev!==a.ev?b.ev-a.ev:b.honap-a.honap);
+    document.getElementById('allomanyTableBody').innerHTML = sorted.map(d => {
+        const gi = allData.findIndex(x=>x.ev===d.ev&&x.honap===d.honap&&x.besorolas===d.besorolas&&x.esemeny===d.esemeny&&x.valtozas===d.valtozas&&x.osszesedaz===d.osszesedaz);
+        const isStatic = gi < ALLOMANY_DATA.length;
+        return '<tr><td>'+d.ev+'</td><td>'+MONTHS[d.honap]+'</td><td>'+d.besorolas+'</td>' +
+            '<td><span style="background:'+(evtColors[d.esemeny]||'#f0f0f0')+';padding:3px 8px;border-radius:12px;font-size:11px;">'+d.esemeny+'</span></td>' +
+            '<td class="'+(d.valtozas>0?'amount-income':'amount-expense')+'">'+(d.valtozas>0?'+':'')+d.valtozas+'</td>' +
+            '<td><strong>'+d.osszesedaz+'</strong></td>' +
+            '<td style="color:#aaa;font-size:12px;">'+(d.megj||'')+'</td>' +
+            '<td>'+(isStatic
+                ? '<span title="Excel adat" style="color:#ddd;padding:5px;font-size:13px;"><i class="fas fa-lock"></i></span>'
+                : '<button class="btn-delete" onclick="deleteAllomanyEntry('+gi+')" title="Törlés"><i class="fas fa-trash"></i></button>')+'</td></tr>';
+    }).join('');
+    document.getElementById('allomanyEmpty').style.display = sorted.length ? 'none' : 'block';
 }
 
-// ===== ÖSSZESÍTŐ =====
+
 function refreshOsszesito() {
     const labels = OSSZESITO.map(d=>d.ev);
     if (chartEves) chartEves.destroy();
